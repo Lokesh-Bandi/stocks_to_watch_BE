@@ -14,10 +14,10 @@ mainRouter.use(`/${ROUTES.signUp}`, signUpRouter);
 
 mainRouter.use('/', async (req, res, next) => {
   if (!global.breezeInstance) {
-    connectBreeze();
+    await connectBreeze();
   }
   next();
 });
-mainRouter.get('/', MainController.fetchStockCodes);
+mainRouter.get('/', MainController.fetchDataTest);
 
 export default mainRouter;

@@ -1,6 +1,5 @@
 import Fetcher from '../../api/Fetcher.js';
 import { getBreezeRequestConfig } from '../../api/utils.js';
-import { STOCK_SYMBOLS } from '../../constants/constants.js';
 
 const modal = {
   getJsonData: async () => {
@@ -8,8 +7,11 @@ const modal = {
       // const fetchedData = await Fetcher.get(
       //   'https://jsonplaceholder.typicode.com/posts'
       // );
-      const fetchedData = await fetch('https://jsonplaceholder.typicode.com/posts');
-      return fetchedData.json();
+      const fetchedData = await Fetcher.get(
+        'https://jsonplaceholder.typicode.com/posts'
+      );
+      console.log(fetchedData)
+      return fetchedData;
     } catch (err) {
       return null;
     }

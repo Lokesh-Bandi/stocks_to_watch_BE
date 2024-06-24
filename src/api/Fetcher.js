@@ -1,19 +1,16 @@
-import axios, {
-  isAxiosError
-} from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 import { consoleError } from '../Error/consoleError.js';
 import ErrorTypes from '../Error/types.js';
 
 class FetcherRoot {
-  static instance;
+  static instance = null;
 
-  cache = {};
+  static cache = {};
 
   SUCCESS_STATUS_CODE = 200;
 
   SUCCESS_STATUS_CODE_POST = 201;
-
   static getInstance() {
     if (!this.instance) {
       this.instance = new FetcherRoot();
@@ -29,18 +26,15 @@ class FetcherRoot {
     }
   }
 
-  get(
-    url,
-    baseUrl = '',
-    params = {}
-  ){
+  get(url, baseUrl = null, params = null) {
     let originalUrl = url;
     if (baseUrl) {
       originalUrl = baseUrl + originalUrl;
     }
-    if (this.cache[originalUrl]) {
-      return this.cache[originalUrl].payload;
-    }
+    // if (this.cache[originalUrl]) {
+    //   return this.cache[originalUrl].payload;
+    // }
+    console.log(originalUrl)
     this.cache[originalUrl] = {
       time: Date.now(),
       payload: axios
@@ -70,12 +64,7 @@ class FetcherRoot {
     return this.cache[originalUrl].payload;
   }
 
-   post(
-    url,
-    data = undefined,
-    baseUrl = undefined,
-    config = null
-  ) {
+  post(url, data = undefined, baseUrl = undefined, config = null) {
     let originalUrl = url;
     if (baseUrl) {
       originalUrl = baseUrl + originalUrl;
