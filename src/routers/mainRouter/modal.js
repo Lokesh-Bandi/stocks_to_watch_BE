@@ -1,5 +1,6 @@
 import Fetcher from '../../api/Fetcher.js';
 import { getBreezeRequestConfig } from '../../api/utils.js';
+import { STOCK_SYMBOLS } from '../../constants/constants.js';
 
 const modal = {
   getJsonData: async () => {

@@ -12,13 +12,12 @@ const mainRouter = express.Router();
 mainRouter.use(`/${ROUTES.login}`, loginRouter);
 mainRouter.use(`/${ROUTES.signUp}`, signUpRouter);
 
-mainRouter.use('/', (req, res, next) => {
-  console.log('Connect');
+mainRouter.use('/', async (req, res, next) => {
   if (!global.breezeInstance) {
     connectBreeze();
   }
   next();
 });
-mainRouter.get('/', MainController.fetchDataTest);
+mainRouter.get('/', MainController.fetchStockCodes);
 
 export default mainRouter;
