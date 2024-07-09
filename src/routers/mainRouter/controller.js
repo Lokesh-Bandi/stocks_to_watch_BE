@@ -1,4 +1,5 @@
 import { STOCK_SYMBOLS } from '../../constants/constants.js';
+import ApiRateLimiter from '../../services/APILimitService.js';
 
 import modal from './modal.js';
 
@@ -30,12 +31,40 @@ const controller = {
     }
   },
   fetchStockCodes: async (req, res) => {
-    const code = await globalThis.breezeInstance.getNames({
-      exchangeCode: 'NSE',
-      stockCode: 'ICICIBANK',
-    });
-    console.log(code);
-    res.send(code);
+    const allStockCodes = {};
+    const executorCallback = () => {
+      const stockSymbols = STOCK_SYMBOLS;
+
+      const getStockCode = async (currentApiCallcount) => {
+        console.log(currentApiCallcount);
+        const code = await globalThis.breezeInstance.getNames({
+          exchangeCode: 'NSE',
+          stockCode: stockSymbols[currentApiCallcount],
+        });
+        console.log(code);
+        allStockCodes[stockSymbols[currentApiCallcount]] = code;
+      };
+      return getStockCode;
+    };
+
+    const executeAPI = executorCallback();
+    const manualStopCount = 2379;
+
+    const apiRateLimiterInstance = new ApiRateLimiter(
+      executeAPI,
+      manualStopCount,
+      {
+        maxCallsPerMinute: 100,
+        maxCallsPerDay: 5000,
+      }
+    );
+    apiRateLimiterInstance.startRateLimiter();
+
+    const timeToPrint = 1000 * 60 * 24;
+    setTimeout(() => {
+      console.log(allStockCodes);
+      res.send(allStockCodes);
+    }, timeToPrint);
   },
 };
 export default controller;

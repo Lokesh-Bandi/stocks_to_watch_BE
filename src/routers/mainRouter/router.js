@@ -20,4 +20,7 @@ mainRouter.use('/', async (req, res, next) => {
 });
 mainRouter.get('/', MainController.fetchDataTest);
 
+// Fetch Stock Codes
+// mainRouter.get('/stock-codes', MainController.fetchStockCodes);
+
 export default mainRouter;
