@@ -21,7 +21,10 @@
     "crypto": "^1.0.1",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.5.0",
     "quick-api-rate-limiter": "^0.0.3",
+    "socket.io-client": "^4.7.5",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

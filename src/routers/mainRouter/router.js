@@ -15,10 +15,29 @@ mainRouter.use(`/${ROUTES.signUp}`, signUpRouter);
 mainRouter.use('/', async (req, res, next) => {
   if (!global.breezeInstance) {
     await connectBreeze();
+    await MainController.fetchCustomerDetails();
   }
   next();
 });
-mainRouter.get('/', MainController.fetchDataTest);
+
+mainRouter.get('/oneClickFO', MainController.fetchOneClickFO);
+
+mainRouter.get('/stockLiveFeed', MainController.fetchStockLiveFeed);
+
+mainRouter.get('/historicalData/:stockName', async (req, res) => {
+  const { stockName } = req.params;
+  const stockData = await MainController.fetchLast30DaysStockData(stockName);
+  res.send(stockData);
+});
+
+mainRouter.get('/todaysData/:stockName', async (req, res) => {
+  const { stockName } = req.params;
+  const stockData = await MainController.fetchTodaysData(stockName);
+  res.send(stockData);
+});
+
+mainRouter.get('/test', MainController.test);
+
 
 // Fetch Stock Codes
 // mainRouter.get('/stock-codes', MainController.fetchStockCodes);

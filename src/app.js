@@ -3,6 +3,7 @@ import express from 'express';
 import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
 
+import { connectDB } from './database/connectDB.js';
 import mainRouter from './routers/mainRouter/router.js';
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(
 );
 
 app.use(express.json());
+connectDB();
 app.use('/', mainRouter);
 
 app.listen(PORT, () => {
