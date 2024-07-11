@@ -1,3 +1,8 @@
+import {
+  FLAT_GAP,
+  OPERATOR_NAME,
+  TIME_INTERVAL,
+} from '../constants/appConstants.js';
 import { ISecCodes } from '../constants/isecCodes.js';
 
 export const getOneMonthBackISO = (dateString) => {
@@ -67,4 +72,36 @@ export const filterData = (data) => {
     filteredData.push(eachIntervalData);
   });
   return filteredData;
+};
+
+export const flatStockData = (arr, flatGap, operatorName) => {
+  const operator = operatorName === OPERATOR_NAME.max ? Math.max : Math.min;
+  if (arr.length < flatGap) return arr;
+  const flattedArr = [];
+  let elementsProcessed = 0;
+  while (elementsProcessed < arr.length) {
+    const flatValue = operator(
+      ...arr.slice(elementsProcessed, elementsProcessed + flatGap)
+    );
+    flattedArr.push(flatValue);
+    elementsProcessed += flatGap;
+  }
+  return flattedArr;
+};
+
+export const getflatGap = (interval) => {
+  switch (interval) {
+    case TIME_INTERVAL.Five_Minute:
+      return FLAT_GAP.Five_Minute;
+    case TIME_INTERVAL.Ten_Minute:
+      return FLAT_GAP.Ten_Minute;
+    case TIME_INTERVAL.Fifteen_Minute:
+      return FLAT_GAP.Fifteen_Minute;
+    case TIME_INTERVAL.Thirty_Minute:
+      return FLAT_GAP.Thirty_Minute;
+    case TIME_INTERVAL.One_Day:
+      return FLAT_GAP.One_Day;
+    default:
+      return FLAT_GAP.Five_Minute;
+  }
 };

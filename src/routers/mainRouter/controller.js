@@ -1,3 +1,5 @@
+import { RSI } from 'technicalindicators';
+
 import {
   getHistoricalData,
   getTodaysData,
@@ -9,7 +11,7 @@ import {
   insertDBWithLast30DatysData,
   updateDBWithTodaysData,
 } from '../../database/modalFuns.js';
-import { Sample } from '../../database/schemas.js';
+import { NewHistoricalData } from '../../database/schemas.js';
 import ApiRateLimiter from '../../services/APILimitService.js';
 import {
   constructStructuredData,
@@ -19,6 +21,7 @@ import {
 } from '../../utils/utilFuntions.js';
 
 import modal from './modal.js';
+import { getRSI } from '../../utils/talib.js';
 
 const controller = {
   fetchDataTest: async (req, res) => {
@@ -151,33 +154,10 @@ const controller = {
     await updateDBWithTodaysData(stockExchangeCode, { structuredData });
     return structuredData;
   },
-  test: async () => {
-    const findAndUpdate = async (stockCode, updateList) => {
-      try {
-        // Find the document by the specified field
-        const doc = await Sample.findOne({
-          name: 'qwe',
-        });
-        if (!doc) {
-          console.error('Document not found');
-          return;
-        }
-
-        // Remove the first 5 elements from the array
-        doc.items = doc.items.slice(5);
-
-        // Add the new elements to the end of the array
-        doc.items.push(...updateList);
-
-        // Save the updated document
-        await doc.save();
-
-        console.log('Successfully updated document:', doc);
-      } catch (err) {
-        console.error('Error updating document:', err);
-      }
-    };
-    findAndUpdate('', [3, 4, 5]);
+  test: async (req, res) => {
+    const stockName = req.params.st;
+    const rsiValues = await getRSI(stockName, TIME_INTERVAL.One_Day);
+    res.send(rsiValues);
   },
 };
 export default controller;

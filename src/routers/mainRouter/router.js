@@ -36,7 +36,7 @@ mainRouter.get('/todaysData/:stockName', async (req, res) => {
   res.send(stockData);
 });
 
-mainRouter.get('/test', MainController.test);
+mainRouter.get('/test/:st', MainController.test);
 
 
 // Fetch Stock Codes
