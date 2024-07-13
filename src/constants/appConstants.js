@@ -25,4 +25,4 @@ export const FLAT_GAP = {
   Fifteen_Minute: 15,
   Thirty_Minute: 30,
   One_Day: 375,
-}
+};

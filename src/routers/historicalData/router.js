@@ -9,9 +9,6 @@ router.get('/', (req, res) => {
   res.send('<h1>Historical Data Router</h1>');
 });
 
-router.get(
-  '/last30Days/:grp',
-  HistoricalDataController.fetchLast30DaysHistoricalData
-);
+router.get('/last30Days/:grp', HistoricalDataController.fetchLast30DaysHistoricalData);
 
 export default router;

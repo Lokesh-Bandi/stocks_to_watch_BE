@@ -1,12 +1,11 @@
-
 import UpstoxClient from 'upstox-js-sdk';
 
+import { getHistoricalData } from '../../api/upstoxAPI/apiFuntions.js';
 import { TIME_INTERVAL } from '../../constants/appConstants.js';
 import { getRSI } from '../../utils/talib.js';
 import { getFlattenData, getFlattenDataToInterval, getLast30DaysHistoricalData, getInstrumentalCode } from '../../utils/utilFuntions.js';
 
 import modal from './modal.js';
-import { getHistoricalData } from '../../api/upstoxAPI/apiFuntions.js';
 
 export const controller = {
   fetchDataTest: async (req, res) => {

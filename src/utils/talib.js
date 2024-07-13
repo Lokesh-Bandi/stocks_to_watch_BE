@@ -5,10 +5,7 @@ import { getRSIDbValues } from '../database/modalGetFuns.js';
 
 import { flatStockData, getflatGap } from './utilFuntions.js';
 
-export const getRSI = async (
-  stockExchangeCode,
-  interval = TIME_INTERVAL.Five_Minute
-) => {
+export const getRSI = async (stockExchangeCode, interval = TIME_INTERVAL.Five_Minute) => {
   const flatGap = getflatGap(interval);
 
   const fetchedData = await getRSIDbValues(stockExchangeCode);
@@ -16,7 +13,7 @@ export const getRSI = async (
   const closingPrices = flatStockData(fetchedData, flatGap, OPERATOR_NAME.min);
 
   const period = 14;
-  
+
   console.log(closingPrices.length);
 
   const rsiValues = RSI.calculate({ period, values: closingPrices });

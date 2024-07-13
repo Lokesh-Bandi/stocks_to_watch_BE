@@ -1,4 +1,4 @@
-// import { ApiRateLimiter } from 'quick-api-rate-limiter';
+import UpstoxClient from 'upstox-js-sdk';
 
 import { getHistoricalData } from '../../api/upstoxAPI/apiFuntions.js';
 import { TIME_INTERVAL } from '../../constants/appConstants.js';
@@ -12,13 +12,14 @@ export const controller = {
     try {
       const category = req.params.grp;
       const nifty500 = category === 'nifty500' ? NIFTY_500 : [];
+      const upstoxApiInstance = await new UpstoxClient.HistoryApi();
       const executeAPI = async (apiInstance, currentRunningCount) => {
         const stockCode = getInstrumentalCode(nifty500[currentRunningCount]);
         const historicalData = await getHistoricalData(stockCode, apiInstance, TIME_INTERVAL.One_Minute);
         return historicalData;
       };
       const apiRateLimiterInstance = new ApiRateLimiter(
-        globalThis.breezeInstance,
+        upstoxApiInstance,
         executeAPI,
         { maxCallsPerDay: 1000, maxCallsPerMinute: 250, maxCallsPerSecond: 25 },
         NIFTY_500.length

@@ -40,9 +40,7 @@ class FetcherRoot {
         const { statusText } = response;
         const { data } = response;
         if (status !== this.SUCCESS_STATUS_CODE) {
-          throw new Error(
-            `⚠ Error ${status}: ${statusText} while fetching ${endPoint}`
-          );
+          throw new Error(`⚠ Error ${status}: ${statusText} while fetching ${endPoint}`);
         }
         return data;
       })
@@ -70,9 +68,7 @@ class FetcherRoot {
         const { status } = response;
         const { statusText } = response;
         if (status !== this.SUCCESS_STATUS_CODE_POST) {
-          throw new Error(
-            `⚠ Error ${status}: ${statusText} while posting ${endPoint}`
-          );
+          throw new Error(`⚠ Error ${status}: ${statusText} while posting ${endPoint}`);
         }
         return response.data;
       })

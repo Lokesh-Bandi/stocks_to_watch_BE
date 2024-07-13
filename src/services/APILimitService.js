@@ -5,12 +5,7 @@ class ApiRateLimiter {
   constructor(
     apiInstance,
     executorCallback,
-    {
-      maxCallsPerSecond,
-      maxCallsPerMinute,
-      maxCallsPerHour,
-      maxCallsPerDay,
-    } = {
+    { maxCallsPerSecond, maxCallsPerMinute, maxCallsPerHour, maxCallsPerDay } = {
       maxCallsPerSecond: undefined,
       maxCallsPerMinute: undefined,
       maxCallsPerHour: undefined,
@@ -29,9 +24,7 @@ class ApiRateLimiter {
       if (!manualStopCount) {
         return this.maxCallsPerDay ? this.maxCallsPerDay : this.MAX_API_CALLs;
       }
-      return manualStopCount > this.maxCallsPerDay
-        ? this.maxCallsPerDay
-        : manualStopCount;
+      return manualStopCount > this.maxCallsPerDay ? this.maxCallsPerDay : manualStopCount;
     })();
   }
 
@@ -70,10 +63,7 @@ class ApiRateLimiter {
       else if (this.isSecondLimitReached()) await this.sleepNow(1000);
 
       try {
-        const apiResult = await this.executorCallback(
-          this.apiInstance,
-          this.totalCount
-        );
+        const apiResult = await this.executorCallback(this.apiInstance, this.totalCount);
         result.push(apiResult);
       } catch (e) {
         this.responseMessage = RESPONSE_MESSAGE.errorWhileFetching;
@@ -89,10 +79,7 @@ class ApiRateLimiter {
   };
 
   isDayLimitReached = () => {
-    if (
-      this.currentCountPerDay > 0 &&
-      this.currentCountPerDay % this.maxCallsPerDay === 0
-    ) {
+    if (this.currentCountPerDay > 0 && this.currentCountPerDay % this.maxCallsPerDay === 0) {
       console.log(`Day Limit Reached: ${this.totalCount} ${getCurrentTime()}`);
       this.currentCountPerDay = 0;
       this.currentCountPerHour = 0;
@@ -104,13 +91,8 @@ class ApiRateLimiter {
   };
 
   isHourLimitReached = () => {
-    if (
-      this.currentCountPerHour > 0 &&
-      this.currentCountPerHour % this.maxCallsPerHour === 0
-    ) {
-      console.log(
-        `Hour Limit Reached : ${this.totalCount} ${getCurrentTime()}`
-      );
+    if (this.currentCountPerHour > 0 && this.currentCountPerHour % this.maxCallsPerHour === 0) {
+      console.log(`Hour Limit Reached : ${this.totalCount} ${getCurrentTime()}`);
       this.currentCountPerHour = 0;
       this.currentCountPerMinute = 0;
       this.currentCountPerSecond = 0;
@@ -120,13 +102,8 @@ class ApiRateLimiter {
   };
 
   isMinuteLimitReached = () => {
-    if (
-      this.currentCountPerMinute > 0 &&
-      this.currentCountPerMinute % this.maxCallsPerMinute === 0
-    ) {
-      console.log(
-        `Minute Limit Reached : ${this.totalCount} ${getCurrentTime()}`
-      );
+    if (this.currentCountPerMinute > 0 && this.currentCountPerMinute % this.maxCallsPerMinute === 0) {
+      console.log(`Minute Limit Reached : ${this.totalCount} ${getCurrentTime()}`);
       this.currentCountPerMinute = 0;
       this.currentCountPerSecond = 0;
       return true;
@@ -135,13 +112,8 @@ class ApiRateLimiter {
   };
 
   isSecondLimitReached = () => {
-    if (
-      this.currentCountPerSecond > 0 &&
-      this.currentCountPerSecond % this.maxCallsPerSecond === 0
-    ) {
-      console.log(
-        `Second Limit Reached v1: ${this.totalCount} ${getCurrentTime()}`
-      );
+    if (this.currentCountPerSecond > 0 && this.currentCountPerSecond % this.maxCallsPerSecond === 0) {
+      console.log(`Second Limit Reached v1: ${this.totalCount} ${getCurrentTime()}`);
       this.currentCountPerSecond = 0;
       return true;
     }

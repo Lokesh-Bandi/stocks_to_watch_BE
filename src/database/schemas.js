@@ -60,17 +60,14 @@ const historicalDataSchema = new mongoose.Schema({
   ],
 });
 
-export const HistoricalData = mongoose.model(
-  'HistoricalData',
-  historicalDataSchema
-);
+export const HistoricalData = mongoose.model('HistoricalData', historicalDataSchema);
 
 const newHistoricalDataSchema = new mongoose.Schema({
   companyName: {
     type: String,
     required: true,
   },
-  iSecStockCode: {
+  instrumentalCode: {
     type: String,
     required: true,
   },
@@ -106,10 +103,7 @@ const newHistoricalDataSchema = new mongoose.Schema({
   },
 });
 
-export const NewHistoricalData = mongoose.model(
-  'NewHistoricalData',
-  newHistoricalDataSchema
-);
+export const NewHistoricalData = mongoose.model('NewHistoricalData', newHistoricalDataSchema);
 
 const sample = new mongoose.Schema({
   name: {

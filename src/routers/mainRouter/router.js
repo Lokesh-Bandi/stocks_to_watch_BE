@@ -17,7 +17,4 @@ mainRouter.get('/', (req, res) => {
 
 mainRouter.get('/historicalData/:stockExchangeCode', MainController.fetchLast30DaysStockData);
 
-mainRouter.get('/historicalData1/:stockExchangeCode', MainController.fetchLast30DaysStockData);
-
-
 export default mainRouter;

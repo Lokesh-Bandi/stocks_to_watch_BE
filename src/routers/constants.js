@@ -1,4 +1,3 @@
-
 const ROUTES = {
   login: 'login',
   signUp: 'signUp',

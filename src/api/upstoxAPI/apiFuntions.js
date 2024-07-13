@@ -29,7 +29,6 @@ export const getAccessToken = async (authorizationCode) => {
   }
 };
 
-
 export const getHistoricalData = async (stockCode, apiInstance, interval) => {
   const toDate = getCurrentDate();
   const fromDate = getSixtyDaysBackDate(toDate);
