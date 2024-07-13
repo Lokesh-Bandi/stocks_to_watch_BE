@@ -1,29 +1,25 @@
-import { RSI } from 'technicalindicators';
-
 import {
   getHistoricalData,
   getTodaysData,
 } from '../../api/breezeAPI/apiFuntions.js';
-import { SESSION_KEY } from '../../api/breezeAPI/keys.js';
 import { TIME_INTERVAL } from '../../constants/appConstants.js';
 import { STOCK_SYMBOLS } from '../../constants/constants.js';
-import {
-  insertDBWithLast30DatysData,
-  updateDBWithTodaysData,
-} from '../../database/modalFuns.js';
-import { NewHistoricalData } from '../../database/schemas.js';
+import { updateDBWithTodaysData } from '../../database/modalFuns.js';
 import ApiRateLimiter from '../../services/APILimitService.js';
+import { getRSI } from '../../utils/talib.js';
 import {
   constructStructuredData,
   filterData,
   getISecStockCode,
   getLast30DaysHistoricalData,
 } from '../../utils/utilFuntions.js';
+import axios from 'axios';
+import crypto from 'crypto';
 
 import modal from './modal.js';
-import { getRSI } from '../../utils/talib.js';
+import { API_KEY, SECRET_KEY } from '../../api/breezeAPI/keys.js';
 
-const controller = {
+export const controller = {
   fetchDataTest: async (req, res) => {
     console.log('Main Router');
     try {
@@ -86,52 +82,26 @@ const controller = {
       res.send(allStockCodes);
     }, timeToPrint);
   },
-  fetchCustomerDetails: async () => {
-    await globalThis.breezeInstance
-      .getCustomerDetails(SESSION_KEY)
-      .then((data) => {
-        console.log(data);
-        globalThis.customerData = data.Success;
-      })
-      .catch((err) => {
-        console.log(err);
+  fetchISecCode: async (req, res) => {
+    const { stockExchangeCode } = req.params;
+    try {
+      const stockCodeInfo = await globalThis.breezeInstance.getNames({
+        exchangeCode: 'BSE',
+        stockCode: stockExchangeCode,
       });
-  },
-  fetchOneClickFO: async () => {
-    // Callback to receive ticks.
-    function onTicks(ticks) {
-      console.log(ticks);
+      res.send(stockCodeInfo);
+    } catch (e) {
+      res.send(e);
     }
-    // Assign the callbacks
-    await globalThis.breezeInstance.wsConnect();
-    globalThis.breezeInstance.onTicks = onTicks;
-    globalThis.breezeInstance
-      .subscribeFeeds({ stockToken: 'one_click_fno' })
-      .then((resp) => {
-        console.log('Response : ', resp);
-      });
   },
-  fetchStockLiveFeed: async () => {
-    // Callback to receive ticks.
-    function onTicks(ticks) {
-      console.log(ticks);
-    }
-    // Assign the callbacks
-    await globalThis.breezeInstance.wsConnect();
-    globalThis.breezeInstance.onTicks = onTicks;
-    globalThis.breezeInstance
-      .subscribeFeeds({ stockToken: '4.1!1594' })
-      .then((resp) => {
-        console.log('Response : ', resp);
-      });
-  },
-
-  fetchLast30DaysStockData: async (
-    stockExchangeCode,
-    interval = TIME_INTERVAL.Five_Minute
-  ) => {
+  fetchLast30DaysStockData: async (req, res) => {
+    const { stockExchangeCode } = req.params;
     const iSecStockCode = getISecStockCode(stockExchangeCode);
-    const historicalData = await getHistoricalData(iSecStockCode, interval);
+    const historicalData = await getHistoricalData(
+      iSecStockCode,
+      globalThis.breezeInstance,
+      TIME_INTERVAL.Five_Minute
+    );
     const filteredData = filterData(historicalData);
     const last30DaysHistoricalData = getLast30DaysHistoricalData(filteredData);
 
@@ -139,9 +109,9 @@ const controller = {
 
     const structuredData = constructStructuredData(last30DaysHistoricalData);
 
-    await insertDBWithLast30DatysData(stockExchangeCode, structuredData);
+    // await insertDBWithLast30DatysData(stockExchangeCode, structuredData);
 
-    return structuredData;
+    res.send(structuredData);
   },
 
   fetchTodaysData: async (
@@ -160,4 +130,3 @@ const controller = {
     res.send(rsiValues);
   },
 };
-export default controller;

@@ -8,6 +8,8 @@ export const connectBreeze = async () => {
     globalThis.breezeInstance = new BreezeConnect({ appKey: API_KEY });
     // create a session
     await globalThis.breezeInstance.generateSession(SECRET_KEY, SESSION_KEY);
+    const data = await globalThis.breezeInstance.getCustomerDetails(SESSION_KEY);
+    globalThis.customerData = data.Success;
 
     console.log('Breeze Connection Established');
   } catch (e) {

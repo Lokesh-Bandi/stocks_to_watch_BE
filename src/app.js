@@ -3,6 +3,7 @@ import express from 'express';
 import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
 
+import { connectBreeze } from './api/breezeAPI/breezeConnect.js';
 import { connectDB } from './database/connectDB.js';
 import mainRouter from './routers/mainRouter/router.js';
 
@@ -21,6 +22,8 @@ app.use(
 
 app.use(express.json());
 connectDB();
+await connectBreeze();
+
 app.use('/', mainRouter);
 
 app.listen(PORT, () => {

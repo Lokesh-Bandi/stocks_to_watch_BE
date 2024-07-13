@@ -34,11 +34,11 @@ export const getLast30DaysHistoricalData = (stockInfo) => {
 };
 
 export const getISecStockCode = (stockName) => {
-  return ISecCodes[stockName].isec_stock_code;
+  return ISecCodes[stockName]?.isec_stock_code;
 };
 
 export const getCompanyName = (stockName) => {
-  return ISecCodes[stockName].company_name;
+  return ISecCodes[stockName]?.company_name;
 };
 
 export const constructStructuredData = (data) => {

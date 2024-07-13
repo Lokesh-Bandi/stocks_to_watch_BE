@@ -1,43 +1,30 @@
 import express from 'express';
 
-import { connectBreeze } from '../../api/breezeAPI/breezeConnect.js';
 import ROUTES from '../constants.js';
-import loginRouter from '../login/router.js';
-import signUpRouter from '../signup/router.js';
+import historicalDataRouter from '../historicalData/router.js';
+import testRouter from '../test/router.js';
 
-import MainController from './controller.js';
+import { controller as MainController } from './controller.js';
 
 const mainRouter = express.Router();
 
-mainRouter.use(`/${ROUTES.login}`, loginRouter);
-mainRouter.use(`/${ROUTES.signUp}`, signUpRouter);
+mainRouter.use(`/${ROUTES.historicalData}`, historicalDataRouter);
+mainRouter.use(`/${ROUTES.test}`, testRouter);
 
-mainRouter.use('/', async (req, res, next) => {
-  if (!global.breezeInstance) {
-    await connectBreeze();
-    await MainController.fetchCustomerDetails();
-  }
-  next();
+mainRouter.get('/', (req, res) => {
+  res.send('Welcome to the server!!');
 });
 
-mainRouter.get('/oneClickFO', MainController.fetchOneClickFO);
-
-mainRouter.get('/stockLiveFeed', MainController.fetchStockLiveFeed);
-
-mainRouter.get('/historicalData/:stockName', async (req, res) => {
-  const { stockName } = req.params;
-  const stockData = await MainController.fetchLast30DaysStockData(stockName);
-  res.send(stockData);
-});
+mainRouter.get(
+  '/historicalData/:stockExchangeCode',
+  MainController.fetchLast30DaysStockData
+);
 
 mainRouter.get('/todaysData/:stockName', async (req, res) => {
   const { stockName } = req.params;
   const stockData = await MainController.fetchTodaysData(stockName);
   res.send(stockData);
 });
-
-mainRouter.get('/test/:st', MainController.test);
-
 
 // Fetch Stock Codes
 // mainRouter.get('/stock-codes', MainController.fetchStockCodes);
