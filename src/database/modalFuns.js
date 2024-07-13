@@ -1,12 +1,9 @@
-import { getCompanyName, getISecStockCode } from '../utils/utilFuntions.js';
+import { getCompanyName, getInstrumentalCode } from '../utils/utilFuntions.js';
 
 import { NewHistoricalData } from './schemas.js';
 
-export const updateDBWithTodaysData = async (
-  stockExchangeCode,
-  { datetime, volume, open, close, high, low }
-) => {
-  const iSecStockCode = getISecStockCode(stockExchangeCode);
+export const updateDBWithTodaysData = async (stockExchangeCode, { datetime, volume, open, close, high, low }) => {
+  const iSecStockCode = getInstrumentalCode(stockExchangeCode);
   try {
     // Find the document by the specified field
     const doc = await NewHistoricalData.findOne({ iSecStockCode });
@@ -38,11 +35,11 @@ export const updateDBWithTodaysData = async (
 };
 
 export const insertDBWithLast30DatysData = async (stockExchangeCode, data) => {
-  const iSecStockCode = getISecStockCode(stockExchangeCode);
+  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
   const companyName = getCompanyName(stockExchangeCode);
   const newHistoricalData = new NewHistoricalData({
     companyName,
-    iSecStockCode,
+    instrumentalCode,
     stockExchangeCode,
     data,
   });

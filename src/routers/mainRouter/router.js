@@ -15,18 +15,9 @@ mainRouter.get('/', (req, res) => {
   res.send('Welcome to the server!!');
 });
 
-mainRouter.get(
-  '/historicalData/:stockExchangeCode',
-  MainController.fetchLast30DaysStockData
-);
+mainRouter.get('/historicalData/:stockExchangeCode', MainController.fetchLast30DaysStockData);
 
-mainRouter.get('/todaysData/:stockName', async (req, res) => {
-  const { stockName } = req.params;
-  const stockData = await MainController.fetchTodaysData(stockName);
-  res.send(stockData);
-});
+mainRouter.get('/historicalData1/:stockExchangeCode', MainController.fetchLast30DaysStockData);
 
-// Fetch Stock Codes
-// mainRouter.get('/stock-codes', MainController.fetchStockCodes);
 
 export default mainRouter;

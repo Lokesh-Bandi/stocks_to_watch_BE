@@ -1,10 +1,10 @@
-import { getISecStockCode } from '../utils/utilFuntions.js';
+import { getInstrumentalCode } from '../utils/utilFuntions.js';
 
 import { NewHistoricalData } from './schemas.js';
 
 export const getRSIDbValues = async (stockExchangeCode) => {
-  const iSecStockCode = getISecStockCode(stockExchangeCode);
-  const query = { iSecStockCode };
+  const stockCode = getInstrumentalCode(stockExchangeCode);
+  const query = { stockCode };
   const projection = { 'data.close': 1, _id: 0 };
 
   const {

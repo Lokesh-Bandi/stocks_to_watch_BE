@@ -1,44 +1,17 @@
-import {
-  FLAT_GAP,
-  OPERATOR_NAME,
-  TIME_INTERVAL,
-} from '../constants/appConstants.js';
-import { ISecCodes } from '../constants/isecCodes.js';
-
-export const getOneMonthBackISO = (dateString) => {
-  const date = new Date(dateString);
-  date.setMonth(date.getMonth() - 1);
-  return date.toISOString();
-};
-
-export const getTwoMonthBackISO = (dateString) => {
-  const date = new Date(dateString);
-  date.setMonth(date.getMonth() - 2);
-  return date.toISOString();
-};
-
-export const currentDateISO = () => {
-  const date = new Date();
-  date.setUTCHours(7, 0, 0, 0);
-  return date.toISOString();
-};
-
-export const currentDateAndTimeISO = () => {
-  const date = new Date();
-  return date.toISOString();
-};
+import { INSTRUMENT_KEYS } from '../api/upstoxAPI/constants.js';
+import { FLAT_GAP, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
 
 export const getLast30DaysHistoricalData = (stockInfo) => {
-  const last30DaysSize = 76 * 30;
-  return stockInfo.slice(-last30DaysSize);
+  const last30DaysSize = 375 * 30;
+  return stockInfo.slice(0, last30DaysSize).reverse();
 };
 
-export const getISecStockCode = (stockName) => {
-  return ISecCodes[stockName]?.isec_stock_code;
+export const getInstrumentalCode = (stockName) => {
+  return INSTRUMENT_KEYS[stockName][0];
 };
 
 export const getCompanyName = (stockName) => {
-  return ISecCodes[stockName]?.company_name;
+  return INSTRUMENT_KEYS[stockName][1];
 };
 
 export const constructStructuredData = (data) => {
@@ -80,9 +53,7 @@ export const flatStockData = (arr, flatGap, operatorName) => {
   const flattedArr = [];
   let elementsProcessed = 0;
   while (elementsProcessed < arr.length) {
-    const flatValue = operator(
-      ...arr.slice(elementsProcessed, elementsProcessed + flatGap)
-    );
+    const flatValue = operator(...arr.slice(elementsProcessed, elementsProcessed + flatGap));
     flattedArr.push(flatValue);
     elementsProcessed += flatGap;
   }
@@ -91,6 +62,8 @@ export const flatStockData = (arr, flatGap, operatorName) => {
 
 export const getflatGap = (interval) => {
   switch (interval) {
+    case TIME_INTERVAL.One_Minute:
+      return FLAT_GAP.One_Minute;
     case TIME_INTERVAL.Five_Minute:
       return FLAT_GAP.Five_Minute;
     case TIME_INTERVAL.Ten_Minute:
@@ -104,4 +77,77 @@ export const getflatGap = (interval) => {
     default:
       return FLAT_GAP.Five_Minute;
   }
+};
+
+export const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+export const getCurrentDate = () => {
+  const date = new Date();
+  return formatDate(date);
+};
+
+export const getSixtyDaysBackDate = () => {
+  const date = new Date();
+  date.setDate(date.getDate() - 60);
+
+  return formatDate(date);
+};
+
+export const getFlattenData = (stockData) => {
+  const storingObject = {
+    datetime: [],
+    open: [],
+    close: [],
+    high: [],
+    low: [],
+    volume: [],
+  };
+
+  const structuredData = stockData.reduce((acc, eachIntervalData) => {
+    acc.datetime.push(eachIntervalData[0]);
+    acc.open.push(eachIntervalData[1]);
+    acc.high.push(eachIntervalData[2]);
+    acc.low.push(eachIntervalData[3]);
+    acc.close.push(eachIntervalData[4]);
+    acc.volume.push(eachIntervalData[5]);
+    return acc;
+  }, storingObject);
+
+  return structuredData;
+};
+
+export const getFlattenDataToInterval = (stockData, interval) => {
+  const { datetime, open, high, low, close, volume } = stockData;
+  let elementsProcessed = 0;
+  const flattenInterval = getflatGap(interval);
+  const flattenDataToInterval = {
+    datetime: [],
+    open: [],
+    close: [],
+    high: [],
+    low: [],
+    volume: [],
+  };
+  while (elementsProcessed < datetime.length) {
+    const newDatetime = datetime.slice(elementsProcessed, elementsProcessed + flattenInterval)[0];
+    const newOpen = open.slice(elementsProcessed, elementsProcessed + flattenInterval)[0];
+    const newHigh = Math.max(...high.slice(elementsProcessed, elementsProcessed + flattenInterval));
+    const newLow = Math.min(...low.slice(elementsProcessed, elementsProcessed + flattenInterval));
+    const newClose = close.slice(elementsProcessed, elementsProcessed + flattenInterval)[flattenInterval - 1];
+    const newVolume = volume.slice(elementsProcessed, elementsProcessed + flattenInterval).reduce((acc, val) => acc + val, 0);
+    flattenDataToInterval.datetime.push(newDatetime);
+    flattenDataToInterval.open.push(newOpen);
+    flattenDataToInterval.high.push(newHigh);
+    flattenDataToInterval.low.push(newLow);
+    flattenDataToInterval.close.push(newClose);
+    flattenDataToInterval.volume.push(newVolume);
+    elementsProcessed += flattenInterval;
+  }
+  return flattenDataToInterval;
 };

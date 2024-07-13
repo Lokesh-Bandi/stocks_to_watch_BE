@@ -19,9 +19,10 @@ export const OPERATOR_NAME = {
 };
 
 export const FLAT_GAP = {
-  Five_Minute: 1,
-  Ten_Minute: 2,
-  Fifteen_Minute: 3,
-  Thirty_Minute: 5,
-  One_Day: 76,
+  One_Minute: 1,
+  Five_Minute: 5,
+  Ten_Minute: 10,
+  Fifteen_Minute: 15,
+  Thirty_Minute: 30,
+  One_Day: 375,
 }
