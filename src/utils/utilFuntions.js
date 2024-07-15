@@ -8,7 +8,7 @@ export const getLastNDaysHistoricalData = (stockInfo, n = 50) => {
 };
 
 export const getInstrumentalCode = (stockName) => {
-  return INSTRUMENT_KEYS[stockName][0];
+  return INSTRUMENT_KEYS[stockName]?.[0];
 };
 
 export const getCompanyName = (stockName) => {
@@ -93,7 +93,7 @@ export const getCurrentDate = () => {
   return formatDate(date);
 };
 
-export const getLastNDaysBackDate = (date, n) => {
+export const getLastNDaysBackDate = (date, n = 0) => {
   const currentDate = new Date(date);
   const timestamp = currentDate.getTime();
   const timestampNDaysAgo = timestamp - n * 24 * 60 * 60 * 1000;

@@ -9,6 +9,8 @@ import {
   getLastNDaysHistoricalData,
 } from '../../utils/utilFuntions.js';
 
+import { API_VERSION } from './keys.js';
+
 // https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=32d26030-0f60-4a6f-b58d-94fe62bc869f&redirect_uri=http://localhost:3000
 
 export const getAccessToken = async (authorizationCode) => {
@@ -39,7 +41,7 @@ export const getAccessToken = async (authorizationCode) => {
 export const getHistoricalData = async (stockCode, apiInstance, interval, days) => {
   const toDate = getCurrentDate();
   const fromDate = getLastNDaysBackDate(toDate, days + 25);
-  const apiVersion = '2.0';
+  const apiVersion = API_VERSION;
   console.log(stockCode);
   try {
     const historicalData = await new Promise((resolve, reject) => {
@@ -55,6 +57,34 @@ export const getHistoricalData = async (stockCode, apiInstance, interval, days) 
       return res;
     });
     const lastNDaysHistoricalData = getLastNDaysHistoricalData(historicalData, days);
+    const flattenData = getFlattenData(lastNDaysHistoricalData);
+    const flattenDataToInterval = getFlattenDataToInterval(flattenData, TIME_INTERVAL.Five_Minute);
+    return flattenDataToInterval;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};
+
+export const getTodayData = async (stockCode, apiInstance, interval) => {
+  const toDate = getCurrentDate();
+  const fromDate = getLastNDaysBackDate(toDate);
+  const apiVersion = API_VERSION;
+  console.log(stockCode);
+  try {
+    const todayData = await new Promise((resolve, reject) => {
+      apiInstance.getHistoricalCandleData1(stockCode, interval, toDate, fromDate, apiVersion, (error, data) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          resolve(data.data.candles); // Resolve with the candles data
+        }
+      });
+    }).then((res) => {
+      return res;
+    });
+    const lastNDaysHistoricalData = getLastNDaysHistoricalData(todayData, 1);
     const flattenData = getFlattenData(lastNDaysHistoricalData);
     const flattenDataToInterval = getFlattenDataToInterval(flattenData, TIME_INTERVAL.Five_Minute);
     return flattenDataToInterval;

@@ -1,10 +1,10 @@
 import UpstoxClient from 'upstox-js-sdk';
 
-import { API_KEY, AUTH_CODE, REDIRECT_URL, SECRET_KEY } from './keys.js';
+import { API_KEY, API_VERSION, AUTH_CODE, REDIRECT_URL, SECRET_KEY } from './keys.js';
 
 const connectUpstox = async () => {
   const apiInstance = new UpstoxClient.LoginApi();
-  const apiVersion = '2.0';
+  const apiVersion = API_VERSION;
   const opts = {
     code: AUTH_CODE,
     clientId: API_KEY,

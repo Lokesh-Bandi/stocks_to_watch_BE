@@ -10,5 +10,10 @@ export const insertHistoricalData = async (stockExchangeCode, data) => {
     stockExchangeCode,
     data,
   });
-  await newHistoricalData.save();
+  try {
+    await newHistoricalData.save();
+    console.log(`Successfully updated document for the ${instrumentalCode}`);
+  } catch (e) {
+    console.log(`Error updating document for the ${instrumentalCode}`);
+  }
 };

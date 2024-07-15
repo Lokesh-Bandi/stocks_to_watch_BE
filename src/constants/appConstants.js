@@ -31,3 +31,19 @@ export const INDEXES = {
   nify500: 'nifty500',
   nifty250: 'nifty250',
 };
+
+export const DATA_ATTRIBUTES = {
+  open: 'open',
+  high: 'high',
+  low: 'low',
+  close: 'close',
+  volume: 'volume',
+  datetime: 'datetime',
+};
+
+export const PRICE_ELEMENTS_PER_DAY_IN_DB = 75; // 5 minute candles
+
+export const ERROR_MESSAGE = {
+  unknownStockCode: 'Please correct the stock exchange code',
+  unknowDataAttribute: 'Please choose the data attributes from [open, close, high, low, datetime, volume]',
+};

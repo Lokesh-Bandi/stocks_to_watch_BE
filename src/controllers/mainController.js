@@ -1,6 +1,6 @@
 import { TIME_INTERVAL } from '../constants/appConstants.js';
 import modal from '../models/modal.js';
-import { getRSI } from '../utils/talib.js';
+import { calculateRSI } from '../utils/talib.js';
 
 const mainController = {
   fetchDataTest: async (req, res) => {
@@ -13,8 +13,8 @@ const mainController = {
     }
   },
   test: async (req, res) => {
-    const stockName = req.params.st;
-    const rsiValues = await getRSI(stockName, TIME_INTERVAL.One_Day);
+    const { stockExchangeCode } = req.params;
+    const rsiValues = await calculateRSI(stockExchangeCode, TIME_INTERVAL.One_Day);
     res.send(rsiValues);
   },
 };
