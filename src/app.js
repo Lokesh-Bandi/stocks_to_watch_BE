@@ -3,8 +3,8 @@ import express from 'express';
 import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
 
-import { connectDB } from './database/connectDB.js';
-import mainRouter from './routers/mainRouter/router.js';
+import { connectDB } from './database/connections/connectDB.js';
+import mainRouter from './routers/mainRouter.js';
 
 const app = express();
 const PORT = 3000;

@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-import { MONGOURL } from '../envs/environment.js';
+import { MONGOURL } from '../../envs/environment.js';
 
 export const connectDB = () => {
   mongoose
-    .connect(MONGOURL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(MONGOURL)
     .then(() => {
       console.log('Connected to MongoDB Atlas');
     })

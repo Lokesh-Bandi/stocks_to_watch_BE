@@ -1,7 +1,7 @@
 import { RSI } from 'technicalindicators';
 
 import { OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
-import { getRSIDbValues } from '../database/modalGetFuns.js';
+import { getRSIDbValues } from '../database/utils/dbHelper.js';
 
 import { flatStockData, getflatGap } from './utilFuntions.js';
 

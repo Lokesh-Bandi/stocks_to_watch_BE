@@ -1,12 +1,12 @@
 import { getCompanyName, getInstrumentalCode } from '../utils/utilFuntions.js';
 
-import { NewHistoricalData } from './schemas.js';
+import { HistoricalData } from './models/HistoricalData.js';
 
 export const updateDBWithTodaysData = async (stockExchangeCode, { datetime, volume, open, close, high, low }) => {
   const iSecStockCode = getInstrumentalCode(stockExchangeCode);
   try {
     // Find the document by the specified field
-    const doc = await NewHistoricalData.findOne({ iSecStockCode });
+    const doc = await HistoricalData.findOne({ iSecStockCode });
     if (!doc) {
       console.error('Document not found');
       return;
@@ -32,16 +32,4 @@ export const updateDBWithTodaysData = async (stockExchangeCode, { datetime, volu
   } catch (err) {
     console.error('Error updating document:', err);
   }
-};
-
-export const insertDBWithLast30DatysData = async (stockExchangeCode, data) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
-  const companyName = getCompanyName(stockExchangeCode);
-  const newHistoricalData = new NewHistoricalData({
-    companyName,
-    instrumentalCode,
-    stockExchangeCode,
-    data,
-  });
-  await newHistoricalData.save();
 };

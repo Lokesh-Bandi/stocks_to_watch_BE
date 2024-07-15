@@ -1,4 +1,4 @@
-import Fetcher from '../../api/Fetcher.js';
+import Fetcher from '../api/Fetcher.js';
 
 const modal = {
   getJsonData: async () => {

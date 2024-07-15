@@ -1,6 +1,5 @@
-import { getInstrumentalCode } from '../utils/utilFuntions.js';
-
-import { NewHistoricalData } from './schemas.js';
+import { getInstrumentalCode } from '../../utils/utilFuntions.js';
+import { HistoricalData } from '../models/HistoricalData.js';
 
 export const getRSIDbValues = async (stockExchangeCode) => {
   const stockCode = getInstrumentalCode(stockExchangeCode);
@@ -9,7 +8,7 @@ export const getRSIDbValues = async (stockExchangeCode) => {
 
   const {
     data: { close },
-  } = await NewHistoricalData.findOne(query, projection);
+  } = await HistoricalData.findOne(query, projection);
 
   return close;
 };

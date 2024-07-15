@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-import { getCurrentDate, getSixtyDaysBackDate } from '../../utils/utilFuntions.js';
+import { TIME_INTERVAL } from '../../constants/appConstants.js';
+import {
+  getCurrentDate,
+  getFlattenData,
+  getFlattenDataToInterval,
+  getLastNDaysBackDate,
+  getLastNDaysHistoricalData,
+} from '../../utils/utilFuntions.js';
 
 // https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=32d26030-0f60-4a6f-b58d-94fe62bc869f&redirect_uri=http://localhost:3000
 
@@ -29,9 +36,9 @@ export const getAccessToken = async (authorizationCode) => {
   }
 };
 
-export const getHistoricalData = async (stockCode, apiInstance, interval) => {
+export const getHistoricalData = async (stockCode, apiInstance, interval, days) => {
   const toDate = getCurrentDate();
-  const fromDate = getSixtyDaysBackDate(toDate);
+  const fromDate = getLastNDaysBackDate(toDate, days + 25);
   const apiVersion = '2.0';
   console.log(stockCode);
   try {
@@ -47,7 +54,10 @@ export const getHistoricalData = async (stockCode, apiInstance, interval) => {
     }).then((res) => {
       return res;
     });
-    return historicalData;
+    const lastNDaysHistoricalData = getLastNDaysHistoricalData(historicalData, days);
+    const flattenData = getFlattenData(lastNDaysHistoricalData);
+    const flattenDataToInterval = getFlattenDataToInterval(flattenData, TIME_INTERVAL.Five_Minute);
+    return flattenDataToInterval;
   } catch (e) {
     console.log(e);
     return [];

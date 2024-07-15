@@ -26,3 +26,8 @@ export const FLAT_GAP = {
   Thirty_Minute: 30,
   One_Day: 375,
 };
+
+export const INDEXES = {
+  nify500: 'nifty500',
+  nifty250: 'nifty250',
+};

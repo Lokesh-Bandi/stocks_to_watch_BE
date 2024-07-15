@@ -1,1 +1,3 @@
-export const MONGOURL = 'mongodb+srv://lokeshbandi05:Annapurna05@chat-cluster.c4ekqio.mongodb.net/stocks?retryWrites=true&w=majority';
+const clusterUsername = 'lokeshbandi';
+const clusterPassword = 'stocktowatch987';
+export const MONGOURL = `mongodb+srv://${clusterUsername}:${clusterPassword}@stockstowatch.fxmkdxd.mongodb.net/stockstowatchDB?retryWrites=true&w=majority&appName=stocksToWatch`;

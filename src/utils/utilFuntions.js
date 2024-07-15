@@ -1,8 +1,9 @@
 import { INSTRUMENT_KEYS } from '../api/upstoxAPI/constants.js';
-import { FLAT_GAP, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
+import { FLAT_GAP, INDEXES, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
+import { NIFTY_500 } from '../constants/constants.js';
 
-export const getLast30DaysHistoricalData = (stockInfo) => {
-  const last30DaysSize = 375 * 30;
+export const getLastNDaysHistoricalData = (stockInfo, n = 50) => {
+  const last30DaysSize = 375 * n;
   return stockInfo.slice(0, last30DaysSize).reverse();
 };
 
@@ -92,11 +93,12 @@ export const getCurrentDate = () => {
   return formatDate(date);
 };
 
-export const getSixtyDaysBackDate = () => {
-  const date = new Date();
-  date.setDate(date.getDate() - 60);
-
-  return formatDate(date);
+export const getLastNDaysBackDate = (date, n) => {
+  const currentDate = new Date(date);
+  const timestamp = currentDate.getTime();
+  const timestampNDaysAgo = timestamp - n * 24 * 60 * 60 * 1000;
+  const dateNDaysAgo = new Date(timestampNDaysAgo);
+  return formatDate(dateNDaysAgo);
 };
 
 export const getFlattenData = (stockData) => {
@@ -150,4 +152,13 @@ export const getFlattenDataToInterval = (stockData, interval) => {
     elementsProcessed += flattenInterval;
   }
   return flattenDataToInterval;
+};
+
+export const getStcokList = (index) => {
+  switch (index) {
+    case INDEXES.nify500:
+      return NIFTY_500;
+    default:
+      return [];
+  }
 };
