@@ -53,3 +53,5 @@ export const ERROR_MESSAGE = {
   documentInsertSuccess: 'Successfully document updated',
   documentUpdateError: 'Error updating document',
 };
+
+export const MAX_DAYS_DATA = 50;

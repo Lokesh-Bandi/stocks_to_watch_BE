@@ -2,16 +2,18 @@ import express from 'express';
 
 import todaysDataController from '../controllers/todaysDataController.js';
 
-import { SUB_ROUTES } from './routes.js';
-
 const router = express.Router();
+
+const routes = {
+  singleStockData: '/:stockExchangeCode',
+  all: '/all/:grp',
+};
 
 router.get('/', (req, res) => {
   res.send('<h1>Todays Data Router</h1>');
 });
 
-router.get(SUB_ROUTES.today.singleStockData, todaysDataController.fetchTodayData);
-router.get(SUB_ROUTES.today.all, todaysDataController.fetchGroupTodayData);
-router.get(SUB_ROUTES.today.customData, todaysDataController.fetchCustomData);
+router.get(routes.singleStockData, todaysDataController.fetchTodayData);
+router.get(routes.all, todaysDataController.fetchGroupTodayData);
 
 export default router;

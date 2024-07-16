@@ -3,6 +3,7 @@ export const ROUTES = {
   signUp: 'signUp',
   historicalData: 'historicalData',
   today: 'today',
+  stockData: 'stock-data',
   test: 'test',
 };
 

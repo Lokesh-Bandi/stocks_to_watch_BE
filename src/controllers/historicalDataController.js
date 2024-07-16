@@ -42,9 +42,10 @@ const historicalDataController = {
   },
   fetchHistoricalData: async (req, res) => {
     const { stockExchangeCode } = req.params;
-    const stockCode = getInstrumentalCode(stockExchangeCode);
+    const stockCode = stockExchangeCode.toUpperCase();
+    const instrumentalCode = getInstrumentalCode(stockCode);
     const apiInstance = await new UpstoxClient.HistoryApi();
-    const historicalData = await getHistoricalData(stockCode, apiInstance, TIME_INTERVAL.One_Minute, 50);
+    const historicalData = await getHistoricalData(instrumentalCode, apiInstance, TIME_INTERVAL.One_Minute, 50);
 
     // await insertHistoricalData(stockExchangeCode, historicalData); // DB call
 
