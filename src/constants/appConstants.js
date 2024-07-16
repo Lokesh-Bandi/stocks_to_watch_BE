@@ -46,4 +46,10 @@ export const PRICE_ELEMENTS_PER_DAY_IN_DB = 75; // 5 minute candles
 export const ERROR_MESSAGE = {
   unknownStockCode: 'Please correct the stock exchange code',
   unknowDataAttribute: 'Please choose the data attributes from [open, close, high, low, datetime, volume]',
+  unknownStockList: 'Please choose the category from [nifty500]',
+  mongoDBFetchingErrpr: 'Error while finding the doc in history data collection',
+  documentNotFound: 'Document not found in collection',
+  dataAvaiableForTheDate: 'Data has been already inserted for this date',
+  documentInsertSuccess: 'Successfully document updated',
+  documentUpdateError: 'Error updating document',
 };

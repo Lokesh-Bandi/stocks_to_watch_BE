@@ -18,6 +18,9 @@
   ],
   "rules": {
     "no-console": "off",
+    "radix": "off",
+    "consistent-return": "off",
+    "no-continue":"off",
     "no-await-in-loop": "off",
     "no-constant-condition": "off",
     "prettier/prettier": "warn",

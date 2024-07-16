@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 });
 
 router.get(SUB_ROUTES.today.singleStockData, todaysDataController.fetchTodayData);
-router.get(SUB_ROUTES.today.customData, todaysDataController.fetchCustomData);
 router.get(SUB_ROUTES.today.all, todaysDataController.fetchGroupTodayData);
+router.get(SUB_ROUTES.today.customData, todaysDataController.fetchCustomData);
 
 export default router;

@@ -1,13 +1,7 @@
 import axios from 'axios';
 
 import { TIME_INTERVAL } from '../../constants/appConstants.js';
-import {
-  getCurrentDate,
-  getFlattenData,
-  getFlattenDataToInterval,
-  getLastNDaysBackDate,
-  getLastNDaysHistoricalData,
-} from '../../utils/utilFuntions.js';
+import { getCurrentDate, getFlattenDataToIntervalV2, getLastNDaysBackDate, getLastNTradingDatesHistoricalData } from '../../utils/utilFuntions.js';
 
 import { API_VERSION } from './keys.js';
 
@@ -56,9 +50,8 @@ export const getHistoricalData = async (stockCode, apiInstance, interval, days) 
     }).then((res) => {
       return res;
     });
-    const lastNDaysHistoricalData = getLastNDaysHistoricalData(historicalData, days);
-    const flattenData = getFlattenData(lastNDaysHistoricalData);
-    const flattenDataToInterval = getFlattenDataToInterval(flattenData, TIME_INTERVAL.Five_Minute);
+    const lastNDaysHistoricalData = getLastNTradingDatesHistoricalData(historicalData, days);
+    const flattenDataToInterval = getFlattenDataToIntervalV2(lastNDaysHistoricalData, TIME_INTERVAL.Five_Minute);
     return flattenDataToInterval;
   } catch (e) {
     console.log(e);
@@ -67,13 +60,11 @@ export const getHistoricalData = async (stockCode, apiInstance, interval, days) 
 };
 
 export const getTodayData = async (stockCode, apiInstance, interval) => {
-  const toDate = getCurrentDate();
-  const fromDate = getLastNDaysBackDate(toDate);
   const apiVersion = API_VERSION;
   console.log(stockCode);
   try {
     const todayData = await new Promise((resolve, reject) => {
-      apiInstance.getHistoricalCandleData1(stockCode, interval, toDate, fromDate, apiVersion, (error, data) => {
+      apiInstance.getIntraDayCandleData(stockCode, interval, apiVersion, (error, data) => {
         if (error) {
           console.error(error);
           reject(error);
@@ -84,9 +75,8 @@ export const getTodayData = async (stockCode, apiInstance, interval) => {
     }).then((res) => {
       return res;
     });
-    const lastNDaysHistoricalData = getLastNDaysHistoricalData(todayData, 1);
-    const flattenData = getFlattenData(lastNDaysHistoricalData);
-    const flattenDataToInterval = getFlattenDataToInterval(flattenData, TIME_INTERVAL.Five_Minute);
+    const todayWholeData = getLastNTradingDatesHistoricalData(todayData, 1);
+    const flattenDataToInterval = getFlattenDataToIntervalV2(todayWholeData, TIME_INTERVAL.Five_Minute);
     return flattenDataToInterval;
   } catch (e) {
     console.log(e);

@@ -1,30 +1,21 @@
+import { ERROR_MESSAGE } from '../constants/appConstants.js';
 import { findOneHistoryDataDocument } from '../database/utils/dbHelper.js';
 
-export const insertTodayData = async (stockExchangeCode, { datetime, volume, open, close, high, low }) => {
+export const insertTodayData = async (stockExchangeCode, todayData) => {
   try {
     const doc = await findOneHistoryDataDocument(stockExchangeCode);
     if (!doc) {
       return;
     }
-    doc.data.datetime = doc.data.datetime.slice(75);
-    doc.data.volume = doc.data.volume.slice(75);
-    doc.data.open = doc.data.open.slice(75);
-    doc.data.close = doc.data.close.slice(75);
-    doc.data.high = doc.data.high.slice(75);
-    doc.data.low = doc.data.low.slice(75);
+    doc.data.pop();
 
-    doc.data.datetime.push(...datetime);
-    doc.data.volume.push(...volume);
-    doc.data.open.push(...open);
-    doc.data.close.push(...close);
-    doc.data.high.push(...high);
-    doc.data.low.push(...low);
+    doc.data.unshift(...todayData);
 
     // Save the updated document
     await doc.save();
 
-    console.log('Successfully updated document:', doc);
+    console.log(ERROR_MESSAGE.documentInsertSuccess, stockExchangeCode);
   } catch (err) {
-    console.error('Error updating document:', err);
+    console.error(ERROR_MESSAGE.documentUpdateError, err, stockExchangeCode);
   }
 };

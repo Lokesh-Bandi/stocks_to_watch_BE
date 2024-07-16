@@ -11,13 +11,14 @@ const historicalDataController = {
   fetchGroupHistoricalData: async (req, res) => {
     try {
       const { grp: category, days } = req.params;
-      const lastNDays = days ?? 50;
+      const lastNDays = days ? parseInt(days) : 50;
       const stockList = getStcokList(category);
       const upstoxApiInstance = await new UpstoxClient.HistoryApi();
 
       const executeAPI = async (apiInstance, currentRunningCount) => {
         const stockCode = getInstrumentalCode(stockList[currentRunningCount]);
         const historicalData = await getHistoricalData(stockCode, apiInstance, TIME_INTERVAL.One_Minute, lastNDays);
+        await insertHistoricalData(stockList[currentRunningCount], historicalData);
         return historicalData;
       };
 
@@ -31,7 +32,7 @@ const historicalDataController = {
       const { data: rateLimiterResult, message } = await apiRateLimiterInstance.startRateLimiter();
 
       await rateLimiterResult.forEach(async (stockData, ind) => {
-        await insertHistoricalData(stockList[ind], stockData);
+        console.log(stockList[ind]);
       });
 
       res.send(`Data save sucessfully -- ${message}`);
@@ -43,9 +44,9 @@ const historicalDataController = {
     const { stockExchangeCode } = req.params;
     const stockCode = getInstrumentalCode(stockExchangeCode);
     const apiInstance = await new UpstoxClient.HistoryApi();
-    const historicalData = await getHistoricalData(stockCode, apiInstance, TIME_INTERVAL.One_Minute, 5);
+    const historicalData = await getHistoricalData(stockCode, apiInstance, TIME_INTERVAL.One_Minute, 50);
 
-    // await insertHistoricalData(stockExchangeCode, historicalData); //DB call
+    // await insertHistoricalData(stockExchangeCode, historicalData); // DB call
 
     res.send(historicalData);
   },

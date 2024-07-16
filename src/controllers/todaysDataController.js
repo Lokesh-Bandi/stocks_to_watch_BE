@@ -1,10 +1,10 @@
 import UpstoxClient from 'upstox-js-sdk';
 
 import { getTodayData } from '../api/upstoxAPI/apiFuntions.js';
-import { TIME_INTERVAL } from '../constants/appConstants.js';
+import { ERROR_MESSAGE, TIME_INTERVAL } from '../constants/appConstants.js';
 import { NIFTY_500 } from '../constants/constants.js';
-import { fetchCustomDataValues } from '../database/utils/dbHelper.js';
-import { insertHistoricalData } from '../models/historicalDataModel.js';
+import { fetchCustomDataValues, isDataAvailableForThisDate } from '../database/utils/dbHelper.js';
+import { insertTodayData } from '../models/todaysDataModel.js';
 import ApiRateLimiter from '../services/APILimitService.js';
 import { getInstrumentalCode, getStcokList } from '../utils/utilFuntions.js';
 
@@ -13,11 +13,25 @@ const todaysDataController = {
     try {
       const { grp: category } = req.params;
       const stockList = getStcokList(category);
+
+      if (!stockList) {
+        res.send(ERROR_MESSAGE.unknownStockList);
+        return;
+      }
+
       const upstoxApiInstance = await new UpstoxClient.HistoryApi();
 
       const executeAPI = async (apiInstance, currentRunningCount) => {
         const stockCode = getInstrumentalCode(stockList[currentRunningCount]);
         const todayData = await getTodayData(stockCode, apiInstance, TIME_INTERVAL.One_Minute);
+        if (todayData.length === 0) return null;
+
+        const isDataAvailable = await isDataAvailableForThisDate(stockList[currentRunningCount], todayData[0]?.date);
+        if (isDataAvailable) {
+          return null;
+        }
+
+        await insertTodayData(stockList[currentRunningCount], todayData);
         return todayData;
       };
 
@@ -31,7 +45,7 @@ const todaysDataController = {
       const { data: rateLimiterResult, message } = await apiRateLimiterInstance.startRateLimiter();
 
       await rateLimiterResult.forEach(async (stockData, ind) => {
-        await insertHistoricalData(stockList[ind], stockData);
+        console.log(stockList[ind]);
       });
 
       res.send(`Data save sucessfully -- ${message}`);
@@ -42,9 +56,18 @@ const todaysDataController = {
   fetchTodayData: async (req, res) => {
     const { stockExchangeCode } = req.params;
     const stockCode = getInstrumentalCode(stockExchangeCode);
+
+    if (!stockCode) {
+      res.send(ERROR_MESSAGE.unknownStockCode);
+    }
     const apiInstance = await new UpstoxClient.HistoryApi();
     const todayData = await getTodayData(stockCode, apiInstance, TIME_INTERVAL.One_Minute);
+    if (todayData.length === 0) return null;
+    if (isDataAvailableForThisDate(stockExchangeCode, todayData[0]?.date)) {
+      return res.status(200).send(ERROR_MESSAGE.dataAvaiableForTheDate);
+    }
 
+    await insertTodayData(stockExchangeCode, todayData);
     res.send(todayData);
   },
   fetchCustomData: async (req, res) => {
