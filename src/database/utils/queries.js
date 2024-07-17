@@ -67,7 +67,7 @@ export const stockAttributeQuery = (instrumentalCode, attributeName, limit = 100
   const query = [
     {
       $match: {
-        stockExchangeCode: 'RVNL',
+        instrumentalCode,
       },
     },
     { $unwind: '$data' },
@@ -77,6 +77,25 @@ export const stockAttributeQuery = (instrumentalCode, attributeName, limit = 100
         _id: 0,
         date: '$data.date',
         attributeValues: `$data.stockData.${attributeName}`,
+      },
+    },
+  ];
+  return query;
+};
+
+export const completeStockDataQuery = (instrumentalCode, limit = 100000) => {
+  const query = [
+    {
+      $match: {
+        instrumentalCode,
+      },
+    },
+    {
+      $project: {
+        data: {
+          $slice: ['$data', limit],
+        },
+        _id: 0,
       },
     },
   ];

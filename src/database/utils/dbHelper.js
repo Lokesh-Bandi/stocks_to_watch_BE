@@ -1,8 +1,8 @@
-import { DATA_ATTRIBUTES, ERROR_MESSAGE } from '../../constants/appConstants.js';
+import { DATA_ATTRIBUTES, ERROR_MESSAGE, MAX_DAYS_DATA } from '../../constants/appConstants.js';
 import { getInstrumentalCode } from '../../utils/utilFuntions.js';
 import { HistoricalStockInfo } from '../models/HistoricalStockInfoModel.js';
 
-import { isDataAvailableForTheDateQuery, stockAttributeFlattenQuery, stockAttributeQuery } from './queries.js';
+import { completeStockDataQuery, isDataAvailableForTheDateQuery, stockAttributeFlattenQuery, stockAttributeQuery } from './queries.js';
 
 /**
  * Funtion to fecth the history stock data collection document
@@ -27,7 +27,7 @@ export const findOneHistoryDataDocument = async (stockExchangeCode) => {
 };
 
 /**
- * Funtion to check whether the data existed for particular date for a stock
+ * Function to check if data exists for a particular date for a stock.
  * @async
  * @param {string} stockExchangeCode
  * @param {string} date - The date string in yyyy-mm-dd format.
@@ -56,17 +56,23 @@ export const isDataAvailableForThisDate = async (stockExchangeCode, date) => {
  * @returns {Promise<number[]>}
  */
 
-export const fetchCustomFlattenDataValues = async (stockExchangeCode, attributeName, noOfDays) => {
+export const fetchCustomFlattenDataValuesDB = async (stockExchangeCode, attributeName, noOfDays) => {
   const instrumentalCode = getInstrumentalCode(stockExchangeCode);
 
-  if (!instrumentalCode) return ERROR_MESSAGE.unknownStockCode;
-  if (!DATA_ATTRIBUTES[attributeName]) return ERROR_MESSAGE.unknowDataAttribute;
+  if (!instrumentalCode) {
+    console.log(ERROR_MESSAGE.unknownStockCode);
+    return null;
+  }
+  if (!DATA_ATTRIBUTES[attributeName]) {
+    console.log(ERROR_MESSAGE.unknowDataAttribute);
+    return null;
+  }
   try {
     const responseData = await HistoricalStockInfo.aggregate(stockAttributeFlattenQuery(instrumentalCode, attributeName, noOfDays));
     const attributeValues = responseData.length > 0 ? responseData[0].flattenedValues : [];
     return attributeValues;
   } catch (e) {
-    console.log(`Error while fetching the ${attributeName} prices in an doc of history data collection`, e);
+    console.log(`Error encountered while retrieving ${attributeName} stock data from a historical data collection document`, e);
     return [];
   }
 };
@@ -75,28 +81,58 @@ export const fetchCustomFlattenDataValues = async (stockExchangeCode, attributeN
  * Represents a single stock attribute object.
  * @typedef {Object} SingleStockAttibuteResponse
  * @property {string} date - The date string in yyyy-mm-dd format.
- * @property {number[]} attributeValues - attribute values of mentioned attribute
+ * @property {number[]} attributeValues - Attribute values for a specified attribute
  */
 
 /**
- * Funtion to fetch a stock atribute values according to date
+ * Function to retrieve stock attribute values for a specified number of days.
  * @async
  * @param {string} stockExchangeCode
  * @param {string} attributeName - Should be one of the DATA_ATTRIBUTES values
- * @param {number} noOfDays - Data needed for mentioned no of days
+ * @param {number} noOfDays - stock data to fetch for mentioned no of days
  * @returns {Promise<SingleStockAttibuteResponse[]>}
  */
 
-export const fetchCustomDataValues = async (stockExchangeCode, attributeName, noOfDays) => {
+export const fetchCustomDataValuesDB = async (stockExchangeCode, attributeName, noOfDays) => {
   const instrumentalCode = getInstrumentalCode(stockExchangeCode);
 
-  if (!instrumentalCode) return ERROR_MESSAGE.unknownStockCode;
-  if (!DATA_ATTRIBUTES[attributeName]) return ERROR_MESSAGE.unknowDataAttribute;
+  if (!instrumentalCode) {
+    console.log(ERROR_MESSAGE.unknownStockCode);
+    return null;
+  }
+  if (!DATA_ATTRIBUTES[attributeName]) {
+    console.log(ERROR_MESSAGE.unknowDataAttribute);
+    return null;
+  }
   try {
     const responseData = await HistoricalStockInfo.aggregate(stockAttributeQuery(instrumentalCode, attributeName, noOfDays));
     return responseData;
   } catch (e) {
-    console.log(`Error while fetching the ${attributeName} prices in an doc of history data collection`, e);
+    console.log(`Error encountered while retrieving ${attributeName} stock data from a historical data collection document.`, e);
     return [];
+  }
+};
+
+/**
+ * Function to fetch stock data for a specified number of days.
+ * @async
+ * @param {string} stockExchangeCode
+ * @param {number} [noOfDays] - Fetch stock data for a specified number of days
+ * @returns {Promise<SingleStockAttibuteResponse[]>}
+ */
+
+export const fetchCompleteStockDataDB = async (stockExchangeCode, noOfDays = MAX_DAYS_DATA) => {
+  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
+
+  if (!instrumentalCode) {
+    console.log(ERROR_MESSAGE.unknownStockCode);
+    return null;
+  }
+  try {
+    const responseData = await HistoricalStockInfo.aggregate(completeStockDataQuery(instrumentalCode, noOfDays));
+    return responseData[0].data;
+  } catch (e) {
+    console.log(`Error encountered while retrieving stock data from a historical data collection document.`, e);
+    return null;
   }
 };
