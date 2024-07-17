@@ -75,7 +75,7 @@ export const stockAttributeQuery = (instrumentalCode, attributeName, limit = 100
     {
       $project: {
         _id: 0,
-        dates: '$data.date',
+        date: '$data.date',
         attributeValues: `$data.stockData.${attributeName}`,
       },
     },

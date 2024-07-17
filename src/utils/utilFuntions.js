@@ -2,6 +2,47 @@ import { INSTRUMENT_KEYS } from '../api/upstoxAPI/constants.js';
 import { FLAT_GAP, INDEXES, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
 import { NIFTY_500 } from '../constants/constants.js';
 
+/**
+ * StockDataAttributesObject --> { datetime, open, close, high, low, volume }
+ * @typedef {Object} StockDataAttributesObject
+ * @property {string[]} datetime - Format(2024-07-16T15:25:00+05:30)
+ * @property {number[]} open - Open prices
+ * @property {number[]} high - High prices
+ * @property {number[]} low - Low prices
+ * @property {number[]} close - Close prices
+ * @property {number[]} vloume - Volume
+ */
+
+/**
+ * Upstox response data type from API historical/today data
+ * @typedef {Array} UpstoxStockDataAPIResponse
+ * @property {string} 0 - datetime in format (2024-07-16T15:25:00+05:30)
+ * @property {number} 1 - open price
+ * @property {number} 2 - high price
+ * @property {number} 3 - low price
+ * @property {number} 4 - close price
+ * @property {number} 5 - volumes traded
+ * @property {number} 6 - open interest
+ */
+
+/**
+ * history_stock_info collection document data attribute represents array of below object
+ * @typedef {Object} SingleDayDatabaseStockDataObject
+ * @property {string} date - date in the format of YYYY-MM-DD
+ * @property {StockDataAttributesObject} stockData
+ */
+
+/**
+ * Stock data according to date wise object
+ * @typedef {Object} DateWiseDataObject
+ * @property {UpstoxStockDataAPIResponse[]} [dynamicDateKey: string ] - key as this date 2024-07-15 format
+ */
+
+/**
+ * Funtion to extract the date and time from below format (2024-07-16T15:25:00+05:30)
+ * @param {string} datetimeString
+ * @returns {Object} - { date, time }
+ */
 export const extractDateAndTime = (datetimeString) => {
   const datetime = new Date(datetimeString);
   const extractedDate = datetime.toISOString().split('T')[0];
@@ -9,19 +50,20 @@ export const extractDateAndTime = (datetimeString) => {
   return { date: extractedDate, time: extractedTime };
 };
 
-export const extractMinutes = (datetimeString) => {
-  const datetime = new Date(datetimeString);
-  return datetime.getMinutes();
-};
-
-export const getLastNTradingDatesHistoricalData = (stockInfo, n = 50) => {
+/**
+ * Function to extract the stock data of mentioned number of days for a stock
+ * @param {UpstoxStockDataAPIResponse[]} stockInfo - Array that contains OHLCV info for all candles
+ * @param {number} [noOfDays] - Extracts last n days data from response
+ * @returns {DateWiseDataObject}
+ */
+export const getLastNTradingDatesHistoricalData = (stockInfo, noOfDays = 50) => {
   const datesSet = new Set();
   const filteredDataForLastNTradingDates = {};
 
   for (let i = 0; i < stockInfo.length; i += 1) {
     const { date } = extractDateAndTime(stockInfo[i][0]);
     datesSet.add(date);
-    if (datesSet.size === n + 1) {
+    if (datesSet.size === noOfDays + 1) {
       break;
     }
     if (!filteredDataForLastNTradingDates[date]) {
@@ -33,50 +75,21 @@ export const getLastNTradingDatesHistoricalData = (stockInfo, n = 50) => {
   return filteredDataForLastNTradingDates;
 };
 
-export const getLastNDaysHistoricalData = (stockInfo, n = 50) => {
-  const last30DaysSize = 375 * n;
-  return stockInfo.slice(0, last30DaysSize);
+/**
+ * Funtion to return an instrumental code which uses by upstox instance to fetch the respective stock data
+ * @param {string} stockExchangeCode
+ * @returns {string} - instrumental code format (NSE_EQ|INE466L01038)
+ */
+export const getInstrumentalCode = (stockExchangeCode) => {
+  return INSTRUMENT_KEYS[stockExchangeCode]?.[0];
 };
 
-export const getInstrumentalCode = (stockName) => {
-  return INSTRUMENT_KEYS[stockName]?.[0];
-};
-
-export const getCompanyName = (stockName) => {
-  return INSTRUMENT_KEYS[stockName][1];
-};
-
-export const constructStructuredData = (data) => {
-  const storingObject = {
-    datetime: [],
-    open: [],
-    close: [],
-    high: [],
-    low: [],
-    volume: [],
-  };
-
-  const structuredData = data.reduce((acc, eachIntervalData) => {
-    acc.datetime.push(eachIntervalData.datetime);
-    acc.open.push(eachIntervalData.open);
-    acc.close.push(eachIntervalData.close);
-    acc.high.push(eachIntervalData.high);
-    acc.low.push(eachIntervalData.low);
-    acc.volume.push(eachIntervalData.volume);
-    return acc;
-  }, storingObject);
-
-  return structuredData;
-};
-
-export const filterData = (data) => {
-  const exlcudeTime = '09:00:00';
-  const filteredData = [];
-  data.forEach((eachIntervalData) => {
-    if (eachIntervalData.datetime.includes(exlcudeTime)) return;
-    filteredData.push(eachIntervalData);
-  });
-  return filteredData;
+/**
+ * @param {string} stockExchangeCode
+ * @returns {string} -- Full company name
+ */
+export const getCompanyName = (stockExchangeCode) => {
+  return INSTRUMENT_KEYS[stockExchangeCode][1];
 };
 
 export const flatStockData = (arr, flatGap, operatorName) => {
@@ -92,6 +105,11 @@ export const flatStockData = (arr, flatGap, operatorName) => {
   return flattedArr;
 };
 
+/**
+ * Funtion to return an integer for breaking of an array into mentioned interval size
+ * @param {string} interval - Should be from TIME_INTERVAL values
+ * @returns {number} - integer for respective time intervals if exists else 5 minute interval
+ */
 export const getflatGap = (interval) => {
   switch (interval) {
     case TIME_INTERVAL.One_Minute:
@@ -111,6 +129,11 @@ export const getflatGap = (interval) => {
   }
 };
 
+/**
+ * Funtion to reutrn a date in YYYY-MM-DD format
+ * @param {Date} date - Should be a date instance
+ * @returns {string} - YYYY-MM-DD format
+ */
 export const formatDate = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -119,11 +142,21 @@ export const formatDate = (date) => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * Return current Date in YYYY-MM-DD format
+ * @returns {string} - YYYY-MM-DD format
+ */
 export const getCurrentDate = () => {
   const date = new Date();
   return formatDate(date);
 };
 
+/**
+ * Funtion to reutrn a past date in YYYY-MM-DD format from today by mentioned days
+ * @param {Date} date - Should be a date instance
+ * @param {number} [n] - number that specifies to get the past date from today
+ * @returns {string} - YYYY-MM-DD format
+ */
 export const getLastNDaysBackDate = (date, n = 0) => {
   const currentDate = new Date(date);
   const timestamp = currentDate.getTime();
@@ -185,6 +218,18 @@ export const getFlattenDataToInterval = (stockData, interval) => {
   return flattenDataToInterval;
 };
 
+/**
+ * Represents the particular interval data as an array.
+ * @typedef {Object} IntervalDataArray
+ * @property {string} date - The date string in yyyy-mm-dd format.
+ * @property {number[]} attributeValues - attribute values of mentioned attribute
+ */
+
+/**
+ * Funtion to normalise the interval data of upstox response to single stock data type { datetime, open, close, high, low, volume }
+ * @param {UpstoxStockDataAPIResponse[]} intervalDataArr
+ * @returns {StockDataAttributesObject}
+ */
 export const normaliseData = (intervalDataArr) => {
   const attributes = {
     datetime: [],
@@ -225,8 +270,15 @@ export const normaliseData = (intervalDataArr) => {
   return result;
 };
 
-export const getFlattenDataToIntervalV2 = (stockData, interval) => {
-  const dayWiseData = Object.entries(stockData);
+/**
+ * Funtion to generate an array of objects which has date and stockData attributes for all the dates
+ * @param {DateWiseDataObject} dateWiseStockData
+ * @param {string} interval - Should be from TIME_INTERVAL values
+ * @returns {SingleDayDatabaseStockDataObject[]}
+ */
+
+export const getFlattenDataToIntervalV2 = (dateWiseStockData, interval) => {
+  const dayWiseData = Object.entries(dateWiseStockData);
   const flattenInterval = getflatGap(interval);
   const finalStructuredData = dayWiseData.map(([date, eachDayData]) => {
     const dayData = eachDayData;
