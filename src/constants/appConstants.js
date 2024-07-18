@@ -4,6 +4,7 @@ export const TIME_INTERVAL = {
   Ten_Minute: '10minute',
   Fifteen_Minute: '15minute',
   Thirty_Minute: '30minute',
+  Four_Hour: '4hour',
   One_Day: '1day',
 };
 
@@ -19,12 +20,12 @@ export const OPERATOR_NAME = {
 };
 
 export const FLAT_GAP = {
-  One_Minute: 1,
-  Five_Minute: 5,
-  Ten_Minute: 10,
-  Fifteen_Minute: 15,
-  Thirty_Minute: 30,
-  One_Day: 375,
+  Five_Minute: 1,
+  Ten_Minute: 2,
+  Fifteen_Minute: 3,
+  Thirty_Minute: 6,
+  Four_Hour: 48,
+  One_Day: 75,
 };
 
 export const INDEXES = {

@@ -1,5 +1,5 @@
 import { INSTRUMENT_KEYS } from '../api/upstoxAPI/constants.js';
-import { FLAT_GAP, INDEXES, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
+import { DATA_ATTRIBUTES, FLAT_GAP, INDEXES, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
 import { NIFTY_500 } from '../constants/constants.js';
 
 /**
@@ -112,8 +112,6 @@ export const flatStockData = (arr, flatGap, operatorName) => {
  */
 export const getflatGap = (interval) => {
   switch (interval) {
-    case TIME_INTERVAL.One_Minute:
-      return FLAT_GAP.One_Minute;
     case TIME_INTERVAL.Five_Minute:
       return FLAT_GAP.Five_Minute;
     case TIME_INTERVAL.Ten_Minute:
@@ -122,6 +120,8 @@ export const getflatGap = (interval) => {
       return FLAT_GAP.Fifteen_Minute;
     case TIME_INTERVAL.Thirty_Minute:
       return FLAT_GAP.Thirty_Minute;
+    case TIME_INTERVAL.Four_Hour:
+      return FLAT_GAP.Four_Hour;
     case TIME_INTERVAL.One_Day:
       return FLAT_GAP.One_Day;
     default:
@@ -321,4 +321,119 @@ export const getStcokList = (index) => {
     default:
       return null;
   }
+};
+
+/**
+ * Function to calculate the the valid element from interval data for stock data attributes
+ * @param {Array} intervalData - Array of interval data from recent to past
+ * @param {string} attributeName - Should be one of DATA_ATTRIBUTES values
+ * @returns {string | number}
+ */
+export const getValidAttributeValueFromIntervalData = (intervalData, attributeName) => {
+  if (!intervalData || !Array.isArray(intervalData) || intervalData.length === 0) return null;
+  switch (attributeName) {
+    case DATA_ATTRIBUTES.datetime:
+      return intervalData.at(-1);
+    case DATA_ATTRIBUTES.open:
+      return intervalData.at(-1);
+    case DATA_ATTRIBUTES.high:
+      return Math.max(...intervalData);
+    case DATA_ATTRIBUTES.low:
+      return Math.min(...intervalData);
+    case DATA_ATTRIBUTES.close:
+      return intervalData.at(0);
+    case DATA_ATTRIBUTES.volume:
+      return intervalData.reduce((acc, each) => acc + each, 0);
+    default:
+      return null;
+  }
+};
+
+/**
+ * Funtion to split the array in to subarrays of specified interval
+ * @param {Array} arr - array
+ * @param {string} interval - Should be from TIME_INTERVAL values
+ * @returns {Array} - array of interval array [[inteval.length], [inteval.length],...]
+ */
+export const splitArrayIntoSpecifiedIntervals = (arr, interval) => {
+  if (!arr || !Array.isArray(arr) || arr.length === 0) return null;
+  const reducedArray = [];
+  const flatGap = getflatGap(interval);
+
+  if (flatGap === FLAT_GAP.Five_Minute) {
+    return arr;
+  }
+  for (let i = 0; i < arr.length; i += flatGap) {
+    reducedArray.push(arr.slice(i, i + flatGap));
+  }
+  return reducedArray;
+};
+
+/**
+ * Funtion to construct the new data array with new interval data
+ * @param {SingleDayDatabaseStockDataObject[]} dateWiseDataArray
+ * @param {*} interval - Should be from TIME_INTERVAL values
+ * @returns {SingleDayDatabaseStockDataObject[]} - Remains same data structure but with new interval data
+ */
+export const constructIntervalDataFromArray = (dateWiseDataArray, interval) => {
+  if (!Array.isArray(dateWiseDataArray)) return null;
+  if (interval === TIME_INTERVAL.Five_Minute) return dateWiseDataArray;
+  const modifiedDateWiseDataArray = dateWiseDataArray.map((eachDayData) => {
+    const { date, stockData } = eachDayData;
+    const { datetime, close, open, high, low, volume } = stockData;
+    const newDatetime = (() => {
+      const res = splitArrayIntoSpecifiedIntervals(datetime, interval);
+      const newIntervalData = res.map((eachIntervalData) => {
+        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+      });
+      return newIntervalData;
+    })();
+    const newOenPrices = (() => {
+      const res = splitArrayIntoSpecifiedIntervals(open, interval);
+      const newIntervalData = res.map((eachIntervalData) => {
+        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+      });
+      return newIntervalData;
+    })();
+    const newClosePrices = (() => {
+      const res = splitArrayIntoSpecifiedIntervals(close, interval);
+      const newIntervalData = res.map((eachIntervalData) => {
+        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+      });
+      return newIntervalData;
+    })();
+    const newHighPrices = (() => {
+      const res = splitArrayIntoSpecifiedIntervals(high, interval);
+      const newIntervalData = res.map((eachIntervalData) => {
+        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+      });
+      return newIntervalData;
+    })();
+    const newLowPrices = (() => {
+      const res = splitArrayIntoSpecifiedIntervals(low, interval);
+      const newIntervalData = res.map((eachIntervalData) => {
+        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+      });
+      return newIntervalData;
+    })();
+    const newVolumes = (() => {
+      const res = splitArrayIntoSpecifiedIntervals(volume, interval);
+      const newIntervalData = res.map((eachIntervalData) => {
+        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+      });
+      return newIntervalData;
+    })();
+    return {
+      date,
+      stockDate: {
+        datetime: newDatetime,
+        open: newOenPrices,
+        high: newHighPrices,
+        low: newLowPrices,
+        close: newClosePrices,
+        volume: newVolumes,
+      },
+    };
+  });
+  return modifiedDateWiseDataArray;
 };
