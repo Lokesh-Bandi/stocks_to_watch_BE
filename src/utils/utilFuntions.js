@@ -363,8 +363,13 @@ export const splitArrayIntoSpecifiedIntervals = (arr, interval) => {
   if (flatGap === FLAT_GAP.Five_Minute) {
     return arr;
   }
-  for (let i = 0; i < arr.length; i += flatGap) {
-    reducedArray.push(arr.slice(i, i + flatGap));
+  const extraIntervalItemsCount = arr.length % flatGap;
+  if (extraIntervalItemsCount) {
+    reducedArray.push(arr.slice(0, extraIntervalItemsCount));
+  }
+  const remainingArray = arr.slice(extraIntervalItemsCount)
+  for (let i = 0; i < remainingArray.length; i += flatGap) {
+    reducedArray.push(remainingArray.slice(i, i + flatGap));
   }
   return reducedArray;
 };
@@ -384,48 +389,48 @@ export const constructIntervalDataFromArray = (dateWiseDataArray, interval) => {
     const newDatetime = (() => {
       const res = splitArrayIntoSpecifiedIntervals(datetime, interval);
       const newIntervalData = res.map((eachIntervalData) => {
-        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+        return getValidAttributeValueFromIntervalData(eachIntervalData, DATA_ATTRIBUTES.datetime);
       });
       return newIntervalData;
     })();
     const newOenPrices = (() => {
       const res = splitArrayIntoSpecifiedIntervals(open, interval);
       const newIntervalData = res.map((eachIntervalData) => {
-        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+        return getValidAttributeValueFromIntervalData(eachIntervalData, DATA_ATTRIBUTES.open);
       });
       return newIntervalData;
     })();
     const newClosePrices = (() => {
       const res = splitArrayIntoSpecifiedIntervals(close, interval);
       const newIntervalData = res.map((eachIntervalData) => {
-        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+        return getValidAttributeValueFromIntervalData(eachIntervalData, DATA_ATTRIBUTES.close);
       });
       return newIntervalData;
     })();
     const newHighPrices = (() => {
       const res = splitArrayIntoSpecifiedIntervals(high, interval);
       const newIntervalData = res.map((eachIntervalData) => {
-        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+        return getValidAttributeValueFromIntervalData(eachIntervalData, DATA_ATTRIBUTES.high);
       });
       return newIntervalData;
     })();
     const newLowPrices = (() => {
       const res = splitArrayIntoSpecifiedIntervals(low, interval);
       const newIntervalData = res.map((eachIntervalData) => {
-        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+        return getValidAttributeValueFromIntervalData(eachIntervalData, DATA_ATTRIBUTES.low);
       });
       return newIntervalData;
     })();
     const newVolumes = (() => {
       const res = splitArrayIntoSpecifiedIntervals(volume, interval);
       const newIntervalData = res.map((eachIntervalData) => {
-        return getValidAttributeValueFromIntervalData(eachIntervalData, interval);
+        return getValidAttributeValueFromIntervalData(eachIntervalData, DATA_ATTRIBUTES.volume);
       });
       return newIntervalData;
     })();
     return {
       date,
-      stockDate: {
+      stockData: {
         datetime: newDatetime,
         open: newOenPrices,
         high: newHighPrices,

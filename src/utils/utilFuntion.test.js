@@ -2,7 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 
 import { DATA_ATTRIBUTES, TIME_INTERVAL } from '../constants/appConstants';
 
-import { sampeArrayOf50Size, sampleDateWiseData } from './testConstants';
+import { sampeArrayOf50Size, sampleDateWiseData, sampleDateWiseDataInterval10Mins, sampleDateWiseDataInterval30Mins } from './testConstants.test';
 import { constructIntervalDataFromArray, getValidAttributeValueFromIntervalData, splitArrayIntoSpecifiedIntervals } from './utilFuntions';
 
 describe('getValidAttributeValueFromIntervalData', () => {
@@ -107,49 +107,49 @@ describe('splitArrayIntoSpecifiedIntervals', () => {
   it('Passing valid array and interval = 15 mins (3)', () => {
     const result = splitArrayIntoSpecifiedIntervals(sampeArrayOf50Size, TIME_INTERVAL.Fifteen_Minute);
     const expectedResult = [
-      [23, 56, 11],
-      [78, 34, 90],
-      [17, 42, 65],
-      [88, 5, 30],
-      [71, 48, 19],
-      [53, 82, 14],
-      [37, 69, 92],
-      [25, 63, 10],
-      [87, 41, 76],
-      [28, 50, 94],
-      [9, 67, 32],
-      [81, 46, 13],
-      [58, 85, 21],
-      [74, 39, 72],
-      [4, 61, 16],
-      [83, 36, 79],
-      [52, 95],
+      [23, 56],
+      [11, 78, 34],
+      [90, 17, 42],
+      [65, 88, 5],
+      [30, 71, 48],
+      [19, 53, 82],
+      [14, 37, 69],
+      [92, 25, 63],
+      [10, 87, 41],
+      [76, 28, 50],
+      [94, 9, 67],
+      [32, 81, 46],
+      [13, 58, 85],
+      [21, 74, 39],
+      [72, 4, 61],
+      [16, 83, 36],
+      [79, 52, 95],
     ];
     expect(result).toStrictEqual(expectedResult);
   });
   it('Passing valid array and interval = 30 mins (6)', () => {
     const result = splitArrayIntoSpecifiedIntervals(sampeArrayOf50Size, TIME_INTERVAL.Thirty_Minute);
     const expectedResult = [
-      [23, 56, 11, 78, 34, 90],
-      [17, 42, 65, 88, 5, 30],
-      [71, 48, 19, 53, 82, 14],
-      [37, 69, 92, 25, 63, 10],
-      [87, 41, 76, 28, 50, 94],
-      [9, 67, 32, 81, 46, 13],
-      [58, 85, 21, 74, 39, 72],
-      [4, 61, 16, 83, 36, 79],
-      [52, 95],
+      [23, 56],
+      [11, 78, 34, 90, 17, 42],
+      [65, 88, 5, 30, 71, 48],
+      [19, 53, 82, 14, 37, 69],
+      [92, 25, 63, 10, 87, 41],
+      [76, 28, 50, 94, 9, 67],
+      [32, 81, 46, 13, 58, 85],
+      [21, 74, 39, 72, 4, 61],
+      [16, 83, 36, 79, 52, 95],
     ];
     expect(result).toStrictEqual(expectedResult);
   });
   it('Passing valid array and interval = 4 hrs (48)', () => {
     const result = splitArrayIntoSpecifiedIntervals(sampeArrayOf50Size, TIME_INTERVAL.Four_Hour);
     const expectedResult = [
+      [23, 56],
       [
-        23, 56, 11, 78, 34, 90, 17, 42, 65, 88, 5, 30, 71, 48, 19, 53, 82, 14, 37, 69, 92, 25, 63, 10, 87, 41, 76, 28, 50, 94, 9, 67, 32, 81, 46, 13,
-        58, 85, 21, 74, 39, 72, 4, 61, 16, 83, 36, 79,
+        11, 78, 34, 90, 17, 42, 65, 88, 5, 30, 71, 48, 19, 53, 82, 14, 37, 69, 92, 25, 63, 10, 87, 41, 76, 28, 50, 94, 9, 67, 32, 81, 46, 13, 58, 85,
+        21, 74, 39, 72, 4, 61, 16, 83, 36, 79, 52, 95,
       ],
-      [52, 95],
     ];
     expect(result).toStrictEqual(expectedResult);
   });
@@ -166,24 +166,24 @@ describe('splitArrayIntoSpecifiedIntervals', () => {
   it('If the array is unable to split into equals', () => {
     const result = splitArrayIntoSpecifiedIntervals(sampeArrayOf50Size, TIME_INTERVAL.Fifteen_Minute);
     const expectedResult = [
-      [23, 56, 11],
-      [78, 34, 90],
-      [17, 42, 65],
-      [88, 5, 30],
-      [71, 48, 19],
-      [53, 82, 14],
-      [37, 69, 92],
-      [25, 63, 10],
-      [87, 41, 76],
-      [28, 50, 94],
-      [9, 67, 32],
-      [81, 46, 13],
-      [58, 85, 21],
-      [74, 39, 72],
-      [4, 61, 16],
-      [83, 36, 79],
-      [52, 95],
-    ];;
+      [23, 56],
+      [11, 78, 34],
+      [90, 17, 42],
+      [65, 88, 5],
+      [30, 71, 48],
+      [19, 53, 82],
+      [14, 37, 69],
+      [92, 25, 63],
+      [10, 87, 41],
+      [76, 28, 50],
+      [94, 9, 67],
+      [32, 81, 46],
+      [13, 58, 85],
+      [21, 74, 39],
+      [72, 4, 61],
+      [16, 83, 36],
+      [79, 52, 95],
+    ];
     expect(result).toStrictEqual(expectedResult);
   });
   it('Empty interval array', () => {
@@ -205,9 +205,12 @@ describe('constructIntervalDataFromArray', () => {
     const result = constructIntervalDataFromArray(sampleDateWiseData, TIME_INTERVAL.Five_Minute);
     expect(result).toStrictEqual(sampleDateWiseData);
   });
-  // it('valid datewiseArray and valid interval = 10 mins', () => {
-  //   const result = constructIntervalDataFromArray(sampleDateWiseData, TIME_INTERVAL.Ten_Minute);
-  //   const expectedResult = 
-  //   expect(result).toStrictEqual(sampleDateWiseData);
-  // });
+  it('valid datewiseArray and valid interval = 10 mins', () => {
+    const result = constructIntervalDataFromArray(sampleDateWiseData, TIME_INTERVAL.Ten_Minute);
+    expect(result).toStrictEqual(sampleDateWiseDataInterval10Mins);
+  });
+  it('valid datewiseArray and valid interval = 10 mins', () => {
+    const result = constructIntervalDataFromArray(sampleDateWiseData, TIME_INTERVAL.Thirty_Minute);
+    expect(result).toStrictEqual(sampleDateWiseDataInterval30Mins);
+  });
 });
