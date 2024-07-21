@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-import { TIME_INTERVAL } from '../../constants/appConstants.js';
 import { getCurrentDate, getFlattenDataToIntervalV2, getLastNDaysBackDate, getLastNTradingDatesHistoricalData } from '../../utils/utilFuntions.js';
 
 import { API_VERSION } from './keys.js';
@@ -51,7 +50,7 @@ export const getHistoricalData = async (stockCode, apiInstance, interval, days) 
       return res;
     });
     const lastNDaysHistoricalData = getLastNTradingDatesHistoricalData(historicalData, days);
-    const flattenDataToInterval = getFlattenDataToIntervalV2(lastNDaysHistoricalData, TIME_INTERVAL.Five_Minute);
+    const flattenDataToInterval = getFlattenDataToIntervalV2(lastNDaysHistoricalData);
     return flattenDataToInterval;
   } catch (e) {
     console.log(e);
@@ -76,7 +75,7 @@ export const getTodayData = async (stockCode, apiInstance, interval) => {
       return res;
     });
     const todayWholeData = getLastNTradingDatesHistoricalData(todayData, 1);
-    const flattenDataToInterval = getFlattenDataToIntervalV2(todayWholeData, TIME_INTERVAL.Five_Minute);
+    const flattenDataToInterval = getFlattenDataToIntervalV2(todayWholeData);
     return flattenDataToInterval;
   } catch (e) {
     console.log(e);

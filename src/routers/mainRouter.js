@@ -3,6 +3,7 @@ import express from 'express';
 import historicalDataRouter from './historicalDataRouter.js';
 import { ROUTES } from './routes.js';
 import stockDataRouter from './stockDataRouter.js';
+import technicalIndicatorsRouter from './technicalIndicatorsRouter.js';
 import testRouter from './testRouter.js';
 import todaysDataRouter from './todaysDataRouter.js';
 
@@ -12,6 +13,7 @@ mainRouter.use(`/${ROUTES.historicalData}`, historicalDataRouter);
 mainRouter.use(`/${ROUTES.today}`, todaysDataRouter);
 mainRouter.use(`/${ROUTES.test}`, testRouter);
 mainRouter.use(`/${ROUTES.stockData}`, stockDataRouter);
+mainRouter.use(`/${ROUTES.technicalIndicators}`, technicalIndicatorsRouter);
 
 mainRouter.get('/', (req, res) => {
   res.send('Welcome to the server!!');

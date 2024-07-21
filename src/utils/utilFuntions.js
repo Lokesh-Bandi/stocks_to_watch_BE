@@ -33,6 +33,13 @@ import { NIFTY_500 } from '../constants/constants.js';
  */
 
 /**
+ * Represents a single stock attribute object.
+ * @typedef {Object} SingleStockAttibuteResponse
+ * @property {string} date - The date string in yyyy-mm-dd format.
+ * @property {number[] | string[]} attributeValues - Attribute values for a specified attribute
+ */
+
+/**
  * Stock data according to date wise object
  * @typedef {Object} DateWiseDataObject
  * @property {UpstoxStockDataAPIResponse[]} [dynamicDateKey: string ] - key as this date 2024-07-15 format
@@ -277,9 +284,9 @@ export const normaliseData = (intervalDataArr) => {
  * @returns {SingleDayDatabaseStockDataObject[]}
  */
 
-export const getFlattenDataToIntervalV2 = (dateWiseStockData, interval) => {
+export const getFlattenDataToIntervalV2 = (dateWiseStockData) => {
   const dayWiseData = Object.entries(dateWiseStockData);
-  const flattenInterval = getflatGap(interval);
+  const flattenInterval = 5;
   const finalStructuredData = dayWiseData.map(([date, eachDayData]) => {
     const dayData = eachDayData;
     let elementsProcessed = 0;
@@ -367,7 +374,7 @@ export const splitArrayIntoSpecifiedIntervals = (arr, interval) => {
   if (extraIntervalItemsCount) {
     reducedArray.push(arr.slice(0, extraIntervalItemsCount));
   }
-  const remainingArray = arr.slice(extraIntervalItemsCount)
+  const remainingArray = arr.slice(extraIntervalItemsCount);
   for (let i = 0; i < remainingArray.length; i += flatGap) {
     reducedArray.push(remainingArray.slice(i, i + flatGap));
   }
@@ -377,7 +384,7 @@ export const splitArrayIntoSpecifiedIntervals = (arr, interval) => {
 /**
  * Funtion to construct the new data array with new interval data
  * @param {SingleDayDatabaseStockDataObject[]} dateWiseDataArray
- * @param {*} interval - Should be from TIME_INTERVAL values
+ * @param {string} interval - Should be from TIME_INTERVAL values
  * @returns {SingleDayDatabaseStockDataObject[]} - Remains same data structure but with new interval data
  */
 export const constructIntervalDataFromArray = (dateWiseDataArray, interval) => {
@@ -441,4 +448,58 @@ export const constructIntervalDataFromArray = (dateWiseDataArray, interval) => {
     };
   });
   return modifiedDateWiseDataArray;
+};
+
+/**
+ * Funtion to construct the new data array with new interval data for specified attribute
+ * @param {SingleStockAttibuteResponse[]} dateWiseAttributeArray
+ * @param {string} interval - Should be from TIME_INTERVAL values
+ * @param {string} attributeName - Should be one of DATA_ATTRIBUTES values
+ * @returns {SingleStockAttibuteResponse[]} - Remains same data structure but with new interval data
+ */
+export const constructIntervalDataFromAttributeArray = (dateWiseAttributeArray, interval, attributeName) => {
+  if (!Array.isArray(dateWiseAttributeArray)) return null;
+  if (interval === TIME_INTERVAL.Five_Minute) return dateWiseAttributeArray;
+  const modifiedDateWiseDataArray = dateWiseAttributeArray.map((eachDayData) => {
+    const { date, attributeValues } = eachDayData;
+    const newIntervalDataObj = (() => {
+      const res = splitArrayIntoSpecifiedIntervals(attributeValues, interval);
+      const newIntervalData = res.map((eachIntervalData) => {
+        return getValidAttributeValueFromIntervalData(eachIntervalData, attributeName);
+      });
+      return newIntervalData;
+    })();
+    return {
+      date,
+      attributeValues: newIntervalDataObj,
+    };
+  });
+  return modifiedDateWiseDataArray;
+};
+
+/**
+ * Funtion to check for the correct time interval
+ * @param {string} interval - Should be from TIME_INTERVAL values
+ * @returns {boolean}
+ */
+export const isCorrectTimeInterval = (interval) => {
+  const validTimeIntervals = Object.values(TIME_INTERVAL);
+  if (validTimeIntervals.includes(interval)) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Funtion to flat the attribute array
+ * @param {SingleStockAttibuteResponse[]} dateWiseAttributeArray
+ * @returns {number[] | string[]} - flatten the attribute data array
+ */
+export const getFlattenAttributeData = (dateWiseAttributeArray) => {
+  if (!Array.isArray(dateWiseAttributeArray)) return null;
+  const flattenAttibuteArray = dateWiseAttributeArray.reduce((acc, eachDayAttributeData) => {
+    acc.push(...eachDayAttributeData.attributeValues);
+    return acc;
+  }, []);
+  return flattenAttibuteArray;
 };

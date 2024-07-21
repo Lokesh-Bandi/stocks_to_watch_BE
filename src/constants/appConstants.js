@@ -56,3 +56,7 @@ export const ERROR_MESSAGE = {
 };
 
 export const MAX_DAYS_DATA = 50;
+
+export const TECHNICAL_INDICATORS = {
+  rsi: 'RSI',
+};

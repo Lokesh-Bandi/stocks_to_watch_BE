@@ -4,6 +4,7 @@ export const ROUTES = {
   historicalData: 'historicalData',
   today: 'today',
   stockData: 'stock-data',
+  technicalIndicators: 'ta',
   test: 'test',
 };
 

@@ -7,7 +7,7 @@ import { completeStockDataQuery, isDataAvailableForTheDateQuery, stockAttributeF
 /**
  * Funtion to fecth the history stock data collection document
  * @async
- * @param {string} stockExchangeCode 
+ * @param {string} stockExchangeCode
  * @returns {Promise<Object>} - Returns mongoDB document if exists or null
  */
 export const findOneHistoryDataDocument = async (stockExchangeCode) => {
@@ -81,7 +81,7 @@ export const fetchCustomFlattenDataValuesDB = async (stockExchangeCode, attribut
  * Represents a single stock attribute object.
  * @typedef {Object} SingleStockAttibuteResponse
  * @property {string} date - The date string in yyyy-mm-dd format.
- * @property {number[]} attributeValues - Attribute values for a specified attribute
+ * @property {number[] | string[]} attributeValues - Attribute values for a specified attribute
  */
 
 /**

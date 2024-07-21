@@ -2,8 +2,20 @@ import { describe, expect, it } from '@jest/globals';
 
 import { DATA_ATTRIBUTES, TIME_INTERVAL } from '../constants/appConstants';
 
-import { sampeArrayOf50Size, sampleDateWiseData, sampleDateWiseDataInterval10Mins, sampleDateWiseDataInterval30Mins } from './testConstants.test';
-import { constructIntervalDataFromArray, getValidAttributeValueFromIntervalData, splitArrayIntoSpecifiedIntervals } from './utilFuntions';
+import {
+  sampeArrayOf50Size,
+  sampleDateWiseData,
+  sampleDateWiseDataInterval10Mins,
+  sampleDateWiseDataInterval30Mins,
+  sampleDayWiseAttributeDataFor5Mins,
+  sampleFlattenAttributeArray,
+} from './testConstants.test';
+import {
+  constructIntervalDataFromArray,
+  getFlattenAttributeData,
+  getValidAttributeValueFromIntervalData,
+  splitArrayIntoSpecifiedIntervals,
+} from './utilFuntions';
 
 describe('getValidAttributeValueFromIntervalData', () => {
   it('Datetime', () => {
@@ -201,16 +213,31 @@ describe('splitArrayIntoSpecifiedIntervals', () => {
 });
 
 describe('constructIntervalDataFromArray', () => {
-  it('valid datewiseArray and valid interval = 5 mins', () => {
+  it('Valid datewiseArray and valid interval = 5 mins', () => {
     const result = constructIntervalDataFromArray(sampleDateWiseData, TIME_INTERVAL.Five_Minute);
     expect(result).toStrictEqual(sampleDateWiseData);
   });
-  it('valid datewiseArray and valid interval = 10 mins', () => {
+  it('Valid datewiseArray and valid interval = 10 mins', () => {
     const result = constructIntervalDataFromArray(sampleDateWiseData, TIME_INTERVAL.Ten_Minute);
     expect(result).toStrictEqual(sampleDateWiseDataInterval10Mins);
   });
-  it('valid datewiseArray and valid interval = 10 mins', () => {
+  it('Valid datewiseArray and valid interval = 10 mins', () => {
     const result = constructIntervalDataFromArray(sampleDateWiseData, TIME_INTERVAL.Thirty_Minute);
     expect(result).toStrictEqual(sampleDateWiseDataInterval30Mins);
+  });
+});
+
+describe('getFlattenAttributeData', () => {
+  it('Valid dateWise attribute array', () => {
+    const result = getFlattenAttributeData(sampleDayWiseAttributeDataFor5Mins);
+    expect(result).toStrictEqual(sampleFlattenAttributeArray);
+  });
+  it('Empty dateWise attribute array', () => {
+    const result = getFlattenAttributeData([]);
+    expect(result).toStrictEqual([]);
+  });
+  it('Missing datewise aatribute array', () => {
+    const result = getFlattenAttributeData();
+    expect(result).toBe(null);
   });
 });
