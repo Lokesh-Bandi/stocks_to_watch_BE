@@ -8,11 +8,15 @@ import {
   sampleDateWiseDataInterval10Mins,
   sampleDateWiseDataInterval30Mins,
   sampleDayWiseAttributeDataFor5Mins,
+  sampleDayWiseStockDataArray,
   sampleFlattenAttributeArray,
+  sampleflattenDayWiseStockDataArray,
+  sampleflattenDayWiseStockDataArrayForSpecificAttributes,
 } from './testConstants.test';
 import {
   constructIntervalDataFromArray,
   getFlattenAttributeData,
+  getFlattenStockData,
   getValidAttributeValueFromIntervalData,
   splitArrayIntoSpecifiedIntervals,
 } from './utilFuntions';
@@ -238,6 +242,25 @@ describe('getFlattenAttributeData', () => {
   });
   it('Missing datewise aatribute array', () => {
     const result = getFlattenAttributeData();
+    expect(result).toBe(null);
+  });
+});
+
+describe('getFlattenStockData', () => {
+  it('Valid dateWise stock data array', () => {
+    const result = getFlattenStockData(sampleDayWiseStockDataArray);
+    expect(result).toEqual(sampleflattenDayWiseStockDataArray);
+  });
+  it('Valid dateWise stock data array and specifc attributes', () => {
+    const result = getFlattenStockData(sampleDayWiseStockDataArray, [DATA_ATTRIBUTES.high, DATA_ATTRIBUTES.low, DATA_ATTRIBUTES.volume]);
+    expect(result).toEqual(sampleflattenDayWiseStockDataArrayForSpecificAttributes);
+  });
+  it('Empty dateWise attribute array', () => {
+    const result = getFlattenStockData([]);
+    expect(result).toStrictEqual(null);
+  });
+  it('Missing datewise aatribute array', () => {
+    const result = getFlattenStockData();
     expect(result).toBe(null);
   });
 });

@@ -14,6 +14,17 @@ import { NIFTY_500 } from '../constants/constants.js';
  */
 
 /**
+ * StockDataAttributesObject --> { datetime, open, close, high, low, volume }
+ * @typedef {Object} StockDataAttributesObjectOptional
+ * @property {string[]} [datetime] - Format(2024-07-16T15:25:00+05:30)
+ * @property {number[]} [open] - Open prices
+ * @property {number[]} [high] - High prices
+ * @property {number[]} [low] - Low prices
+ * @property {number[]} [close] - Close prices
+ * @property {number[]} [vloume] - Volume
+ */
+
+/**
  * Upstox response data type from API historical/today data
  * @typedef {Array} UpstoxStockDataAPIResponse
  * @property {string} 0 - datetime in format (2024-07-16T15:25:00+05:30)
@@ -491,9 +502,9 @@ export const isCorrectTimeInterval = (interval) => {
 };
 
 /**
- * Funtion to flat the attribute array
+ * Funtion to flatten the attribute array
  * @param {SingleStockAttibuteResponse[]} dateWiseAttributeArray
- * @returns {number[] | string[]} - flatten the attribute data array
+ * @returns {StockDataAttributesObject} - flatten the attribute data array
  */
 export const getFlattenAttributeData = (dateWiseAttributeArray) => {
   if (!Array.isArray(dateWiseAttributeArray)) return null;
@@ -502,4 +513,42 @@ export const getFlattenAttributeData = (dateWiseAttributeArray) => {
     return acc;
   }, []);
   return flattenAttibuteArray;
+};
+
+/**
+ * Funtion to flatten all stock attributes data into single object
+ * @param {SingleDayDatabaseStockDataObject[]} dateWiseStockDataArray
+ * @param {string[]} [attributesRequired] - Array of DATA_ATTRIBUTE values to return
+ * @returns {StockDataAttributesObjectOptional} - flattening all stock attributes data into single object
+ */
+export const getFlattenStockData = (dateWiseStockDataArray, attributesRequired) => {
+  let attributesArray = Object.values(DATA_ATTRIBUTES);
+  const returnObj = {
+    [DATA_ATTRIBUTES.datetime]: [],
+    [DATA_ATTRIBUTES.open]: [],
+    [DATA_ATTRIBUTES.high]: [],
+    [DATA_ATTRIBUTES.low]: [],
+    [DATA_ATTRIBUTES.close]: [],
+    [DATA_ATTRIBUTES.volume]: [],
+  };
+  if (!Array.isArray(dateWiseStockDataArray) || dateWiseStockDataArray.length === 0) return null;
+  if (Array.isArray(attributesRequired)) {
+    attributesArray = attributesRequired;
+  }
+  const flattenStockData = dateWiseStockDataArray.reduce((acc, { stockData }) => {
+    Object.entries(stockData).forEach(([attributeName, value]) => {
+      if (attributesArray.includes(attributeName)) {
+        acc[attributeName].push(...value);
+      }
+    });
+    return acc;
+  }, returnObj);
+
+  const filteredFlattenStockData = Object.entries(flattenStockData).reduce((acc, [attributeName, value]) => {
+    if (value.length > 0) {
+      acc[attributeName] = value;
+    }
+    return acc;
+  }, {});
+  return filteredFlattenStockData;
 };

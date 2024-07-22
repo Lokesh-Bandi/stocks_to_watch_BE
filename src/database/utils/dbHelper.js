@@ -5,6 +5,24 @@ import { HistoricalStockInfo } from '../models/HistoricalStockInfoModel.js';
 import { completeStockDataQuery, isDataAvailableForTheDateQuery, stockAttributeFlattenQuery, stockAttributeQuery } from './queries.js';
 
 /**
+ * StockDataAttributesObject --> { datetime, open, close, high, low, volume }
+ * @typedef {Object} StockDataAttributesObject
+ * @property {string[]} datetime - Format(2024-07-16T15:25:00+05:30)
+ * @property {number[]} open - Open prices
+ * @property {number[]} high - High prices
+ * @property {number[]} low - Low prices
+ * @property {number[]} close - Close prices
+ * @property {number[]} vloume - Volume
+ */
+
+/**
+ * history_stock_info collection document data attribute represents array of below object
+ * @typedef {Object} SingleDayDatabaseStockDataObject
+ * @property {string} date - date in the format of YYYY-MM-DD
+ * @property {StockDataAttributesObject} stockData
+ */
+
+/**
  * Funtion to fecth the history stock data collection document
  * @async
  * @param {string} stockExchangeCode
@@ -118,7 +136,7 @@ export const fetchCustomDataValuesDB = async (stockExchangeCode, attributeName, 
  * @async
  * @param {string} stockExchangeCode
  * @param {number} [noOfDays] - Fetch stock data for a specified number of days
- * @returns {Promise<SingleStockAttibuteResponse[]>}
+ * @returns {Promise<SingleDayDatabaseStockDataObject[]>}
  */
 
 export const fetchCompleteStockDataDB = async (stockExchangeCode, noOfDays = MAX_DAYS_DATA) => {
