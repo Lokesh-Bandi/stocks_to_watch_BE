@@ -1,5 +1,5 @@
 import { TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
-import { calculateMFI, calculateRSI } from '../utils/talib.js';
+import { calculateMFI, calculateOBV, calculateRSI } from '../utils/talib.js';
 import { isCorrectTimeInterval } from '../utils/utilFuntions.js';
 
 const technicalIndicatorsController = {
@@ -16,6 +16,9 @@ const technicalIndicatorsController = {
         break;
       case TECHNICAL_INDICATORS.mfi:
         technicalIndicatorResponse = await calculateMFI(stockCode, timeInterval, timePeriod);
+        break;
+      case TECHNICAL_INDICATORS.obv:
+        technicalIndicatorResponse = await calculateOBV(stockCode, timeInterval);
         break;
       default:
         technicalIndicatorResponse = null;
