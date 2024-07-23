@@ -1,6 +1,8 @@
 import { ERROR_MESSAGE, TECH_INDICATOR_TIME_INTERVALS, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
+import { updateRSIValueForStocks } from '../models/technicalIndicatorsModel.js';
 import { calculateMFI, calculateOBV, calculateRSI } from '../utils/talib.js';
-import { getStcokList, isCorrectTimeInterval } from '../utils/utilFuntions.js';
+import { constructRSIStoringObject } from '../utils/talibUtils.js';
+import { getStockList, isCorrectTimeInterval } from '../utils/utilFuntions.js';
 
 const technicalIndicatorsController = {
   fetchTechnicalIndicatorValue: async (req, res) => {
@@ -28,7 +30,7 @@ const technicalIndicatorsController = {
   updateGroupCustomTIValue: async (req, res) => {
     try {
       const { grp: category } = req.params;
-      const stockList = getStcokList(category);
+      const stockList = getStockList(category);
 
       if (!stockList) {
         res.send(ERROR_MESSAGE.unknownStockList);
@@ -50,7 +52,10 @@ const technicalIndicatorsController = {
           return nestedResponse;
         })
       );
-      res.send(indicatorResponse);
+
+      const rsiStoringObject = constructRSIStoringObject(indicatorResponse);
+      await updateRSIValueForStocks(rsiStoringObject);
+      res.send(rsiStoringObject);
     } catch (e) {
       res.send(`Error ocurred : ${e}`);
     }

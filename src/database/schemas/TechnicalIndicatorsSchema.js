@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { TIME_INTERVAL } from '../../constants/appConstants';
+import { TIME_INTERVAL } from '../../constants/appConstants.js';
 
 const timeIntervalObjectSchema = new mongoose.Schema(
   {
@@ -21,7 +21,10 @@ const timeIntervalObjectSchema = new mongoose.Schema(
 );
 const technicalIndicatorValues = new mongoose.Schema(
   {
-    rsi: timeIntervalObjectSchema,
+    rsi: {
+      type: timeIntervalObjectSchema,
+      required: true,
+    },
   },
   { _id: false }
 );
@@ -30,8 +33,12 @@ const technicalIndicatorsSchema = new mongoose.Schema({
   stockExchangeCode: {
     type: String,
     required: true,
+    unique: true,
   },
-  ta: technicalIndicatorValues,
+  ta: {
+    type: technicalIndicatorValues,
+    required: true,
+  },
 });
 
 export const TechnicalIndicatorsModel = mongoose.model('TechnicalIndicatorValues', technicalIndicatorsSchema);

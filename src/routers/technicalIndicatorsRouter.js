@@ -6,7 +6,7 @@ const router = express.Router();
 
 const routes = {
   stockCode: '/:stockExchangeCode',
-  test: '/test/:grp',
+  all: '/all/:grp',
 };
 
 router.get('/', (req, res) => {
@@ -14,6 +14,6 @@ router.get('/', (req, res) => {
 });
 
 router.get(routes.stockCode, technicalIndicatorsController.fetchTechnicalIndicatorValue);
-router.get(routes.test, technicalIndicatorsController.updateGroupCustomTIValue);
+router.get(routes.all, technicalIndicatorsController.updateGroupCustomTIValue);
 
 export default router;

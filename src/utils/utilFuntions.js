@@ -332,11 +332,11 @@ export const getFlattenDataToIntervalV2 = (dateWiseStockData) => {
   return finalStructuredData;
 };
 
-export const getStcokList = (index) => {
+export const getStockList = (index) => {
   switch (index) {
     case INDEXES.nify500:
       return NIFTY_500;
-    case 'test':
+    case 'testArray':
       return [NIFTY_500[0], NIFTY_500[477]];
     default:
       return null;

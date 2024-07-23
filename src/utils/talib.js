@@ -20,10 +20,11 @@ export const calculateRSI = async (stockExchangeCode, interval = TIME_INTERVAL.O
     const rsiInput = { period: timePeriod, values: closingPricesArray.reverse() };
     const rsiValues = RSI.calculate(rsiInput) ?? [];
 
-    return rsiValues.at(-1);
+    const finalRSIValue = rsiValues.at(-1);
+    return [stockExchangeCode, interval, finalRSIValue];
   } catch (e) {
     console.log('Error while calculating RSI values', e);
-    return null;
+    return [stockExchangeCode, interval, null];
   }
 };
 

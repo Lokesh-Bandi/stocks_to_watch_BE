@@ -5,14 +5,14 @@ import { TIME_INTERVAL } from '../constants/appConstants.js';
 import { NIFTY_500 } from '../constants/constants.js';
 import { insertHistoricalData } from '../models/historicalDataModel.js';
 import ApiRateLimiter from '../services/APILimitService.js';
-import { getInstrumentalCode, getStcokList } from '../utils/utilFuntions.js';
+import { getInstrumentalCode, getStockList } from '../utils/utilFuntions.js';
 
 const historicalDataController = {
   fetchGroupHistoricalData: async (req, res) => {
     try {
       const { grp: category, days } = req.params;
       const lastNDays = days ? parseInt(days) : 50;
-      const stockList = getStcokList(category);
+      const stockList = getStockList(category);
       const upstoxApiInstance = await new UpstoxClient.HistoryApi();
 
       const executeAPI = async (apiInstance, currentRunningCount) => {

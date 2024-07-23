@@ -6,13 +6,13 @@ import { NIFTY_500 } from '../constants/constants.js';
 import { isDataAvailableForThisDate } from '../database/utils/dbHelper.js';
 import { insertTodayData } from '../models/todaysDataModel.js';
 import ApiRateLimiter from '../services/APILimitService.js';
-import { getInstrumentalCode, getStcokList } from '../utils/utilFuntions.js';
+import { getInstrumentalCode, getStockList } from '../utils/utilFuntions.js';
 
 const todaysDataController = {
   fetchGroupTodayData: async (req, res) => {
     try {
       const { grp: category } = req.params;
-      const stockList = getStcokList(category);
+      const stockList = getStockList(category);
 
       if (!stockList) {
         res.send(ERROR_MESSAGE.unknownStockList);
