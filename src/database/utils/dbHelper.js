@@ -1,6 +1,6 @@
 import { DATA_ATTRIBUTES, ERROR_MESSAGE, MAX_DAYS_DATA } from '../../constants/appConstants.js';
 import { getInstrumentalCode } from '../../utils/utilFuntions.js';
-import { HistoricalStockInfo } from '../models/HistoricalStockInfoModel.js';
+import { HistoricalStockInfo } from '../schemas/HistoricalStockInfoSchema.js';
 
 import { completeStockDataQuery, isDataAvailableForTheDateQuery, stockAttributeFlattenQuery, stockAttributeQuery } from './queries.js';
 

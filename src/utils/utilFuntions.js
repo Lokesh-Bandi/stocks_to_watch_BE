@@ -336,6 +336,8 @@ export const getStcokList = (index) => {
   switch (index) {
     case INDEXES.nify500:
       return NIFTY_500;
+    case 'test':
+      return [NIFTY_500[0], NIFTY_500[477]];
     default:
       return null;
   }

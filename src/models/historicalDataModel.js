@@ -1,4 +1,4 @@
-import { HistoricalStockInfo } from '../database/models/HistoricalStockInfoModel.js';
+import { HistoricalStockInfo } from '../database/schemas/HistoricalStockInfoSchema.js';
 import { getCompanyName, getInstrumentalCode } from '../utils/utilFuntions.js';
 
 export const insertHistoricalData = async (stockExchangeCode, data) => {

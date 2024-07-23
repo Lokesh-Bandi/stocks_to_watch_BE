@@ -1,6 +1,6 @@
-import { TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
+import { ERROR_MESSAGE, TECH_INDICATOR_TIME_INTERVALS, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
 import { calculateMFI, calculateOBV, calculateRSI } from '../utils/talib.js';
-import { isCorrectTimeInterval } from '../utils/utilFuntions.js';
+import { getStcokList, isCorrectTimeInterval } from '../utils/utilFuntions.js';
 
 const technicalIndicatorsController = {
   fetchTechnicalIndicatorValue: async (req, res) => {
@@ -24,6 +24,36 @@ const technicalIndicatorsController = {
         technicalIndicatorResponse = null;
     }
     res.send(technicalIndicatorResponse);
+  },
+  updateGroupCustomTIValue: async (req, res) => {
+    try {
+      const { grp: category } = req.params;
+      const stockList = getStcokList(category);
+
+      if (!stockList) {
+        res.send(ERROR_MESSAGE.unknownStockList);
+        return;
+      }
+      const promiseQueue = [];
+
+      stockList.forEach((stockExchangeCode) => {
+        const intervalPromiseQeue = [];
+        TECH_INDICATOR_TIME_INTERVALS.forEach((eachTimeInterval) => {
+          intervalPromiseQeue.push(calculateRSI(stockExchangeCode, eachTimeInterval));
+        });
+        promiseQueue.push(intervalPromiseQeue);
+      });
+
+      const indicatorResponse = await Promise.all(
+        promiseQueue.map(async (innerPromiseArray) => {
+          const nestedResponse = await Promise.all(innerPromiseArray);
+          return nestedResponse;
+        })
+      );
+      res.send(indicatorResponse);
+    } catch (e) {
+      res.send(`Error ocurred : ${e}`);
+    }
   },
 };
 
