@@ -260,12 +260,12 @@ export const normaliseData = (intervalDataArr) => {
   for (let row = 0; row < intervalDataArr.length; row += 1) {
     if (
       !(
-        intervalDataArr[row][0] &&
-        intervalDataArr[row][1] &&
-        intervalDataArr[row][2] &&
-        intervalDataArr[row][3] &&
-        intervalDataArr[row][4] &&
-        intervalDataArr[row][5]
+        intervalDataArr[row][0] !== null &&
+        intervalDataArr[row][1] !== null &&
+        intervalDataArr[row][2] !== null &&
+        intervalDataArr[row][3] !== null &&
+        intervalDataArr[row][4] !== null &&
+        intervalDataArr[row][5] !== null
       )
     )
       continue;
@@ -337,7 +337,7 @@ export const getStockList = (index) => {
     case INDEXES.nify500:
       return NIFTY_500;
     case 'testArray':
-      return [NIFTY_500[0], NIFTY_500[477]];
+      return [NIFTY_500[0]];
     default:
       return null;
   }

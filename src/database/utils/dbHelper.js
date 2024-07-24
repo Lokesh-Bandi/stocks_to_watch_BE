@@ -1,6 +1,7 @@
 import { DATA_ATTRIBUTES, ERROR_MESSAGE, MAX_DAYS_DATA } from '../../constants/appConstants.js';
 import { getInstrumentalCode } from '../../utils/utilFuntions.js';
 import { HistoricalStockInfo } from '../schemas/HistoricalStockInfoSchema.js';
+import { TechnicalIndicatorsModel } from '../schemas/TechnicalIndicatorsSchema.js';
 
 import { completeStockDataQuery, isDataAvailableForTheDateQuery, stockAttributeFlattenQuery, stockAttributeQuery } from './queries.js';
 
@@ -23,16 +24,43 @@ import { completeStockDataQuery, isDataAvailableForTheDateQuery, stockAttributeF
  */
 
 /**
- * Funtion to fecth the history stock data collection document
+ * Funtion to fetch the history stock data collection document
  * @async
  * @param {string} stockExchangeCode
  * @returns {Promise<Object>} - Returns mongoDB document if exists or null
  */
 export const findOneHistoryDataDocument = async (stockExchangeCode) => {
   const instrumentalCode = getInstrumentalCode(stockExchangeCode);
-  if (!instrumentalCode) return ERROR_MESSAGE.unknownStockCode;
+  if (!instrumentalCode) {
+    console.log(ERROR_MESSAGE.unknownStockCode);
+    return null;
+  }
   try {
     const doc = await HistoricalStockInfo.findOne({ instrumentalCode });
+    if (!doc) {
+      console.log(ERROR_MESSAGE.documentNotFound);
+      return null;
+    }
+    return doc;
+  } catch (e) {
+    console.log(ERROR_MESSAGE.mongoDBFetchingErrpr);
+    return null;
+  }
+};
+
+/**
+ * Funtion to fetch the technical indicator collection document
+ * @async
+ * @param {string} stockExchangeCode
+ * @returns {Promise<Object>} - Returns mongoDB document if exists or null
+ */
+export const findOneTechincalIndicatorDocument = async (stockExchangeCode) => {
+  if (!stockExchangeCode) {
+    console.log(ERROR_MESSAGE.unknownStockCode);
+    return null;
+  }
+  try {
+    const doc = await TechnicalIndicatorsModel.findOne({ stockExchangeCode });
     if (!doc) {
       console.log(ERROR_MESSAGE.documentNotFound);
       return null;

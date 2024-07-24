@@ -53,6 +53,7 @@ export const ERROR_MESSAGE = {
   dataAvaiableForTheDate: 'Data has been already inserted for this date',
   documentInsertSuccess: 'Successfully document updated',
   documentUpdateError: 'Error updating document',
+  unknownTechIndicator: 'Unknown technical indicator',
 };
 
 export const MAX_DAYS_DATA = 50;

@@ -2,10 +2,10 @@ import { describe, expect, it } from '@jest/globals';
 
 import { TIME_INTERVAL } from '../constants/appConstants';
 
-import { constructRSIStoringObject } from './talibUtils';
+import { constructIntervalTechIndicatorStoringObject } from './talibUtils';
 import { getStockList } from './utilFuntions';
 
-describe('constructRSIStoringObject', () => {
+describe('constructIntervalTechIndicatorStoringObject', () => {
   it('All params are valid', () => {
     const stockList = getStockList('testArray');
     if (!stockList) return;
@@ -33,7 +33,7 @@ describe('constructRSIStoringObject', () => {
         [TIME_INTERVAL.One_Day]: 9340,
       },
     };
-    const result = constructRSIStoringObject(input);
+    const result = constructIntervalTechIndicatorStoringObject(input);
     console.log(result);
     expect(result).toEqual(expectedResult);
   });

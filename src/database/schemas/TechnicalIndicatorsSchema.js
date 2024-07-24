@@ -23,7 +23,11 @@ const technicalIndicatorValues = new mongoose.Schema(
   {
     rsi: {
       type: timeIntervalObjectSchema,
-      required: true,
+      default: null,
+    },
+    mfi: {
+      type: timeIntervalObjectSchema,
+      default: null,
     },
   },
   { _id: false }
@@ -34,10 +38,12 @@ const technicalIndicatorsSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    lowercase: false,
   },
   ta: {
     type: technicalIndicatorValues,
     required: true,
+    default: null,
   },
 });
 

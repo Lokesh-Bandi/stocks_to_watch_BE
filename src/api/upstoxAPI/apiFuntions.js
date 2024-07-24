@@ -58,6 +58,31 @@ export const getHistoricalData = async (stockCode, apiInstance, interval, days) 
   }
 };
 
+export const getHistoricalDataForParticularDate = async (stockCode, apiInstance, interval, date) => {
+  const apiVersion = API_VERSION;
+  console.log(stockCode);
+  try {
+    const historicalData = await new Promise((resolve, reject) => {
+      apiInstance.getHistoricalCandleData1(stockCode, interval, date, date, apiVersion, (error, data) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          resolve(data.data.candles); // Resolve with the candles data
+        }
+      });
+    }).then((res) => {
+      return res;
+    });
+    const lastNDaysHistoricalData = getLastNTradingDatesHistoricalData(historicalData, 1);
+    const flattenDataToInterval = getFlattenDataToIntervalV2(lastNDaysHistoricalData);
+    return flattenDataToInterval;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};
+
 export const getTodayData = async (stockCode, apiInstance, interval) => {
   const apiVersion = API_VERSION;
   console.log(stockCode);
