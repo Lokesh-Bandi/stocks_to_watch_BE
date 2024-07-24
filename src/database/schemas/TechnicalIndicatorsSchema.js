@@ -40,6 +40,10 @@ const technicalIndicatorsSchema = new mongoose.Schema({
     unique: true,
     lowercase: false,
   },
+  lastUpdated: {
+    type: Date,
+    required: true,
+  },
   ta: {
     type: technicalIndicatorValues,
     required: true,

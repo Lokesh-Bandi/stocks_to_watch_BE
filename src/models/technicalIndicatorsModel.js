@@ -1,4 +1,5 @@
 import { TechnicalIndicatorsModel } from '../database/schemas/TechnicalIndicatorsSchema.js';
+import { getCurrentDate } from '../utils/utilFuntions.js';
 
 const updateRSIToDB = async (stockExchangeCode, rsiValues) => {
   const udpateStatus = await TechnicalIndicatorsModel.updateOne(
@@ -12,7 +13,7 @@ const updateRSIToDB = async (stockExchangeCode, rsiValues) => {
 const updateMFIToDB = async (stockExchangeCode, mfiValues) => {
   const udpateStatus = await TechnicalIndicatorsModel.updateOne(
     { stockExchangeCode },
-    { $set: { 'ta.mfi': mfiValues } },
+    { $set: { 'ta.mfi': mfiValues, lastUpdated: getCurrentDate() } },
     { upsert: true } // Create a new document if no document matches
   );
   return udpateStatus;
