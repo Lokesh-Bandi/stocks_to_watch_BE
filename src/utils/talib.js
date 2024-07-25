@@ -25,7 +25,7 @@ export const calculateRSI = async (stockExchangeCode, interval = TIME_INTERVAL.O
     const finalRSIValue = rsiValues.at(-1) ? rsiValues.at(-1) : INVALID_VALUE;
     return [stockExchangeCode, interval, finalRSIValue];
   } catch (e) {
-    console.log('Error while calculating RSI values', e);
+    console.log(`Error while calculating RSI values ${stockExchangeCode}`, e);
     return [stockExchangeCode, interval, -1];
   }
 };
@@ -50,7 +50,7 @@ export const calculateMFI = async (stockExchangeCode, interval = TIME_INTERVAL.O
     const finalMFIValue = msiValues.at(-1) ? msiValues.at(-1) : INVALID_VALUE;
     return [stockExchangeCode, interval, finalMFIValue];
   } catch (e) {
-    console.log('Error while calculating MFI values', e);
+    console.log(`Error while calculating MFI values ${stockExchangeCode}`, e);
     return [stockExchangeCode, interval, -1];
   }
 };

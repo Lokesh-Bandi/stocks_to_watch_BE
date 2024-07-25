@@ -64,7 +64,7 @@ const todaysDataController = {
     const apiInstance = await new UpstoxClient.HistoryApi();
     const todayData = await getTodayData(instrumentalCode, apiInstance, TIME_INTERVAL.One_Minute);
     if (todayData.length === 0) return null;
-    if (isDataAvailableForThisDate(stockExchangeCode, todayData[0]?.date)) {
+    if (await isDataAvailableForThisDate(stockExchangeCode, todayData[0]?.date)) {
       return res.status(200).send(ERROR_MESSAGE.dataAvaiableForTheDate);
     }
 
