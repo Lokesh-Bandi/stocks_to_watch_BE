@@ -65,3 +65,8 @@ export const TECHNICAL_INDICATORS = {
 };
 
 export const TECH_INDICATOR_TIME_INTERVALS = [TIME_INTERVAL.Fifteen_Minute, TIME_INTERVAL.Four_Hour, TIME_INTERVAL.One_Day];
+
+export const ApiStatus = {
+  success: 'success',
+  error: 'error',
+};

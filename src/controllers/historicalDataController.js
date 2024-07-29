@@ -17,9 +17,19 @@ const historicalDataController = {
 
       const executeAPI = async (apiInstance, currentRunningCount) => {
         const stockCode = getInstrumentalCode(stockList[currentRunningCount]);
-        const historicalData = await getHistoricalData(stockCode, apiInstance, TIME_INTERVAL.One_Minute, lastNDays);
-        await insertHistoricalData(stockList[currentRunningCount], historicalData);
-        return historicalData;
+        const { status: apiStatus, data: historicalData } = await getHistoricalData(stockCode, apiInstance, TIME_INTERVAL.One_Minute, lastNDays);
+        const { status: dbStatus, ack } = await insertHistoricalData(stockList[currentRunningCount], historicalData);
+        return {
+          stockCode: stockList[currentRunningCount],
+          api: {
+            status: apiStatus,
+            ack: historicalData,
+          },
+          db: {
+            status: dbStatus,
+            ack,
+          },
+        };
       };
 
       const apiRateLimiterInstance = new ApiRateLimiter(
@@ -45,11 +55,21 @@ const historicalDataController = {
     const stockCode = stockExchangeCode.toUpperCase();
     const instrumentalCode = getInstrumentalCode(stockCode);
     const apiInstance = await new UpstoxClient.HistoryApi();
-    const historicalData = await getHistoricalData(instrumentalCode, apiInstance, TIME_INTERVAL.One_Minute, 50);
+    const { status: apiStatus, data: historicalData } = await getHistoricalData(instrumentalCode, apiInstance, TIME_INTERVAL.One_Minute, 50);
 
-    // await insertHistoricalData(stockExchangeCode, historicalData); // DB call
+    // const { status: dbStatus, ack } = await insertHistoricalData(stockExchangeCode, historicalData); // DB call
 
-    res.send(historicalData);
+    res.json({
+      stockCode: stockExchangeCode,
+      api: {
+        status: apiStatus,
+        ack: historicalData,
+      },
+      // db: {
+      //   status: dbStatus,
+      //   ack,
+      // },
+    });
   },
   fetchHistoricalDataForParticularDate: async (req, res) => {
     const { stockExchangeCode } = req.params;
@@ -57,9 +77,20 @@ const historicalDataController = {
     const stockCode = stockExchangeCode.toUpperCase();
     const instrumentalCode = getInstrumentalCode(stockCode);
     const apiInstance = await new UpstoxClient.HistoryApi();
-    const historicalData = await getHistoricalDataForParticularDate(instrumentalCode, apiInstance, TIME_INTERVAL.One_Minute, date);
+    const { status: apiStatus, data: historicalData } = await getHistoricalDataForParticularDate(
+      instrumentalCode,
+      apiInstance,
+      TIME_INTERVAL.One_Minute,
+      date
+    );
 
-    res.send(historicalData);
+    res.send({
+      stockCode: stockExchangeCode,
+      api: {
+        status: apiStatus,
+        ack: historicalData,
+      },
+    });
   },
 };
 

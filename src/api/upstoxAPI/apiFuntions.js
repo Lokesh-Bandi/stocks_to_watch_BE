@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { ApiStatus } from '../../constants/appConstants.js';
 import { getCurrentDate, getFlattenDataToIntervalV2, getLastNDaysBackDate, getLastNTradingDatesHistoricalData } from '../../utils/utilFuntions.js';
 
 import { API_VERSION } from './keys.js';
@@ -51,10 +52,16 @@ export const getHistoricalData = async (stockCode, apiInstance, interval, days) 
     });
     const lastNDaysHistoricalData = getLastNTradingDatesHistoricalData(historicalData, days);
     const flattenDataToInterval = getFlattenDataToIntervalV2(lastNDaysHistoricalData);
-    return flattenDataToInterval;
+    return {
+      status: ApiStatus.success,
+      data: flattenDataToInterval,
+    };
   } catch (e) {
     console.log(e);
-    return [];
+    return {
+      status: ApiStatus.error,
+      data: JSON.parse(e.response?.text ?? {}),
+    };
   }
 };
 
@@ -76,10 +83,16 @@ export const getHistoricalDataForParticularDate = async (stockCode, apiInstance,
     });
     const lastNDaysHistoricalData = getLastNTradingDatesHistoricalData(historicalData, 1);
     const flattenDataToInterval = getFlattenDataToIntervalV2(lastNDaysHistoricalData);
-    return flattenDataToInterval;
+    return {
+      status: ApiStatus.success,
+      data: flattenDataToInterval,
+    };
   } catch (e) {
     console.log(e);
-    return [];
+    return {
+      status: ApiStatus.error,
+      data: JSON.parse(e.response?.text ?? {}),
+    };
   }
 };
 
@@ -101,9 +114,15 @@ export const getTodayData = async (stockCode, apiInstance, interval) => {
     });
     const todayWholeData = getLastNTradingDatesHistoricalData(todayData, 1);
     const flattenDataToInterval = getFlattenDataToIntervalV2(todayWholeData);
-    return flattenDataToInterval;
+    return {
+      status: ApiStatus.success,
+      data: flattenDataToInterval,
+    };
   } catch (e) {
     console.log(e);
-    return [];
+    return {
+      status: ApiStatus.error,
+      data: JSON.parse(e.response?.text ?? {}),
+    };
   }
 };

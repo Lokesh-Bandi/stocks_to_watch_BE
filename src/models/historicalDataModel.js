@@ -1,6 +1,8 @@
 import { HistoricalStockInfo } from '../database/schemas/HistoricalStockInfoSchema.js';
 import { getCompanyName, getInstrumentalCode } from '../utils/utilFuntions.js';
 
+import { DB_STATUS } from './modelUtils.js';
+
 const insertHistoricalDataDB = async ({ companyName, instrumentalCode, stockExchangeCode, data }) => {
   const udpateStatus = await HistoricalStockInfo.updateOne(
     { stockExchangeCode },
@@ -22,10 +24,18 @@ export const insertHistoricalData = async (stockExchangeCode, data) => {
     const acknowledge = await insertHistoricalDataDB(historicalStockInfo);
     if (acknowledge.upsertedId) {
       console.log(`Successfully document created for the ${instrumentalCode}`);
-    } else {
-      console.log(`Successfully document updated for the ${instrumentalCode}`);
+      return { status: DB_STATUS.created, ack: `Successfully document updated for the ${instrumentalCode}` };
     }
+    console.log(`Successfully document updated for the ${instrumentalCode}`);
+    return {
+      status: DB_STATUS.updated,
+      ack: `Successfully document updated for the ${instrumentalCode}`,
+    };
   } catch (e) {
     console.log(`Error updating document for the ${instrumentalCode}`);
+    return {
+      status: DB_STATUS.error,
+      ack: `Error updating document for the ${instrumentalCode} --> ${e}`,
+    };
   }
 };

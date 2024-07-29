@@ -337,7 +337,7 @@ export const getStockList = (index) => {
     case INDEXES.nify500:
       return NIFTY_500;
     case 'testArray':
-      return [NIFTY_500[0]];
+      return ['RVNL', 'ANURAS', 'YESBANK'];
     default:
       return null;
   }
