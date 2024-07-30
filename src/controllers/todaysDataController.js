@@ -6,7 +6,7 @@ import { isDataAvailableForThisDate } from '../database/utils/dbHelper.js';
 import { DB_STATUS } from '../models/modelUtils.js';
 import { insertTodayData } from '../models/todaysDataModel.js';
 import ApiRateLimiter from '../services/APILimitService.js';
-import { getInstrumentalCode, getStockList } from '../utils/utilFuntions.js';
+import { getCurrentDate, getInstrumentalCode, getStockList } from '../utils/utilFuntions.js';
 
 const todaysDataController = {
   fetchGroupTodayData: async (req, res) => {
@@ -23,15 +23,14 @@ const todaysDataController = {
 
       const executeAPI = async (apiInstance, currentRunningCount) => {
         const stockCode = getInstrumentalCode(stockList[currentRunningCount]);
-        const { status: apiStatus, data: todayData } = await getTodayData(stockCode, apiInstance, TIME_INTERVAL.One_Minute);
-
-        const isDataAvailable = await isDataAvailableForThisDate(stockList[currentRunningCount], todayData[0]?.date);
+        console.log(stockCode);
+        const isDataAvailable = await isDataAvailableForThisDate(stockList[currentRunningCount], getCurrentDate());
         if (isDataAvailable) {
           return {
             stockExchangeCode: stockList[currentRunningCount],
             api: {
-              status: apiStatus,
-              ack: todayData,
+              status: ApiStatus.error,
+              ack: ERROR_MESSAGE.dataAvaiableForTheDate,
             },
             db: {
               status: DB_STATUS.error,
@@ -39,6 +38,7 @@ const todaysDataController = {
             },
           };
         }
+        const { status: apiStatus, data: todayData } = await getTodayData(stockCode, apiInstance, TIME_INTERVAL.One_Minute);
 
         const { status: dbStatus, ack } = await insertTodayData(stockList[currentRunningCount], todayData);
         return {
@@ -118,7 +118,7 @@ const todaysDataController = {
     if (todayData.length === 0) return null;
     if (await isDataAvailableForThisDate(stockExchangeCode, todayData[0]?.date)) {
       return res.json({
-        stockCode: stockExchangeCode,
+        stockExchangeCode,
         api: {
           status: apiStatus,
           ack: todayData,
@@ -132,7 +132,7 @@ const todaysDataController = {
 
     const { status: dbStatus, ack } = await insertTodayData(stockExchangeCode, todayData);
     res.json({
-      stockCode: stockExchangeCode,
+      stockExchangeCode,
       api: {
         status: apiStatus,
         ack: todayData,

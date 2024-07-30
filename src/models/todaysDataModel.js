@@ -18,14 +18,14 @@ const insertTodayDataDB = async ({ instrumentalCode, data }) => {
   );
 
   // Pop the 51st trading day data
-  // const poll = await HistoricalStockInfo.updateOne(
-  //   { instrumentalCode },
-  //   {
-  //     $pop: {
-  //       data: -1,
-  //     },
-  //   }
-  // );
+  const popAciton = await HistoricalStockInfo.updateOne(
+    { instrumentalCode },
+    {
+      $pop: {
+        data: 1,
+      },
+    }
+  );
   return udpateStatus;
 };
 

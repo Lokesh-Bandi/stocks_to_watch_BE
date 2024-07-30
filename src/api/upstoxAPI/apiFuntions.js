@@ -98,7 +98,6 @@ export const getHistoricalDataForParticularDate = async (stockCode, apiInstance,
 
 export const getTodayData = async (stockCode, apiInstance, interval) => {
   const apiVersion = API_VERSION;
-  console.log(stockCode);
   try {
     const todayData = await new Promise((resolve, reject) => {
       apiInstance.getIntraDayCandleData(stockCode, interval, apiVersion, (error, data) => {
