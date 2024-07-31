@@ -5,6 +5,7 @@ export const ROUTES = {
   today: 'today',
   stockData: 'stock-data',
   technicalIndicators: 'ta',
+  meta: 'meta',
   test: 'test',
 };
 

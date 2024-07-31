@@ -1,6 +1,6 @@
 import { INSTRUMENT_KEYS } from '../api/upstoxAPI/constants.js';
 import { DATA_ATTRIBUTES, FLAT_GAP, INDEXES, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
-import { NIFTY_500 } from '../constants/constants.js';
+import { NIFTY_500, STOCK_SYMBOLS } from '../constants/constants.js';
 
 /**
  * StockDataAttributesObject --> { datetime, open, close, high, low, volume }
@@ -553,4 +553,8 @@ export const getFlattenStockData = (dateWiseStockDataArray, attributesRequired) 
     return acc;
   }, {});
   return filteredFlattenStockData;
+};
+
+export const isValidStockExchangeCode = (stockExchangeCode) => {
+  return STOCK_SYMBOLS.includes(stockExchangeCode);
 };

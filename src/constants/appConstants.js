@@ -45,6 +45,7 @@ export const DATA_ATTRIBUTES = {
 export const PRICE_ELEMENTS_PER_DAY_IN_DB = 75; // 5 minute candles
 
 export const ERROR_MESSAGE = {
+  unknownInstrumentalCode: 'Please correct the instrumental code',
   unknownStockCode: 'Please correct the stock exchange code',
   unknowDataAttribute: 'Please choose the data attributes from [open, close, high, low, datetime, volume]',
   unknownStockList: 'Please choose the category from [nifty500]',
