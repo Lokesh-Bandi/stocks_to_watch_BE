@@ -14,8 +14,8 @@ router.get('/', (req, res) => {
 });
 
 // http://localhost:3000/meta/ic/RVNL?ic=NSE_EQ|INE415G01027
-router.get(routes.oneInstrumentalCode, metaDataController.updateOneInstrumentalCode);
+router.post(routes.oneInstrumentalCode, metaDataController.updateOneInstrumentalCode);
 // http://localhost:3000/meta/ics/nifty500
-router.get(routes.allInstrumentCodes, metaDataController.updateAllInstrumentalCodes);
+router.post(routes.allInstrumentCodes, metaDataController.updateAllInstrumentalCodes);
 
 export default router;
