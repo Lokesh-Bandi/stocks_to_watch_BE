@@ -1,5 +1,6 @@
 import { ERROR_MESSAGE, TECHNICAL_INDICATORS } from '../constants/appConstants.js';
 import { fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
+import { constructUIResponseObjectForRSI } from '../models/uiModel.js';
 
 const uiController = {
   fetchConsolidatedTechnicalIdicatorValues: async (req, res) => {
@@ -12,7 +13,7 @@ const uiController = {
     }
     switch (technicalIndicator) {
       case TECHNICAL_INDICATORS.rsi:
-        responseData = await fetchTIForAllStocksDB(technicalIndicator);
+        responseData = await constructUIResponseObjectForRSI();
         break;
       case TECHNICAL_INDICATORS.mfi:
         responseData = await fetchTIForAllStocksDB(technicalIndicator);
