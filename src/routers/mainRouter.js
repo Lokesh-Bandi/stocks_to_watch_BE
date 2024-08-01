@@ -7,6 +7,7 @@ import stockDataRouter from './stockDataRouter.js';
 import technicalIndicatorsRouter from './technicalIndicatorsRouter.js';
 import testRouter from './testRouter.js';
 import todaysDataRouter from './todaysDataRouter.js';
+import uiRouter from './uiRouter.js';
 
 const mainRouter = express.Router();
 
@@ -15,6 +16,7 @@ mainRouter.use(`/${ROUTES.today}`, todaysDataRouter);
 mainRouter.use(`/${ROUTES.test}`, testRouter);
 mainRouter.use(`/${ROUTES.stockData}`, stockDataRouter);
 mainRouter.use(`/${ROUTES.technicalIndicators}`, technicalIndicatorsRouter);
+mainRouter.use(`/${ROUTES.ui}`, uiRouter);
 mainRouter.use(`/${ROUTES.meta}`, metaDataRouter);
 
 mainRouter.get('/', (req, res) => {

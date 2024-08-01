@@ -6,6 +6,7 @@ export const ROUTES = {
   stockData: 'stock-data',
   technicalIndicators: 'ta',
   meta: 'meta',
+  ui: 'ui',
   test: 'test',
 };
 

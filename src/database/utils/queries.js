@@ -101,3 +101,17 @@ export const completeStockDataQuery = (instrumentalCode, limit = 100000) => {
   ];
   return query;
 };
+
+export const rsiForAllQuery = (technicalIndicator) => {
+  const ti = technicalIndicator.toLowerCase();
+  const query = [
+    {
+      $project: {
+        stockExchangeCode: 1,
+        [technicalIndicator]: `$ta.${ti}`,
+        _id: 0,
+      },
+    },
+  ];
+  return query;
+};

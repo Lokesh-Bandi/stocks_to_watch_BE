@@ -3,7 +3,13 @@ import { getInstrumentalCode } from '../../utils/utilFuntions.js';
 import { HistoricalStockInfo } from '../schemas/HistoricalStockInfoSchema.js';
 import { TechnicalIndicatorsModel } from '../schemas/TechnicalIndicatorsSchema.js';
 
-import { completeStockDataQuery, isDataAvailableForTheDateQuery, stockAttributeFlattenQuery, stockAttributeQuery } from './queries.js';
+import {
+  completeStockDataQuery,
+  isDataAvailableForTheDateQuery,
+  rsiForAllQuery,
+  stockAttributeFlattenQuery,
+  stockAttributeQuery,
+} from './queries.js';
 
 /**
  * StockDataAttributesObject --> { datetime, open, close, high, low, volume }
@@ -179,6 +185,16 @@ export const fetchCompleteStockDataDB = async (stockExchangeCode, noOfDays = MAX
     return responseData[0].data;
   } catch (e) {
     console.log(`Error encountered while retrieving stock data from a historical data collection document.`, e);
+    return null;
+  }
+};
+
+export const fetchTIForAllStocksDB = async (technicalIndicator) => {
+  try {
+    const responseData = await TechnicalIndicatorsModel.aggregate(rsiForAllQuery(technicalIndicator));
+    return responseData;
+  } catch (e) {
+    console.log('Error while querying RSI values', e);
     return null;
   }
 };
