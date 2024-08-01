@@ -55,6 +55,7 @@ export const ERROR_MESSAGE = {
   documentInsertSuccess: 'Successfully document updated',
   documentUpdateError: 'Error updating document',
   unknownTechIndicator: 'Unknown technical indicator',
+  noInstrumentalCodes: 'Missing instrumental codes object',
 };
 
 export const MAX_DAYS_DATA = 50;

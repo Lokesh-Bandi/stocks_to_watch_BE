@@ -1,5 +1,5 @@
 import { HistoricalStockInfo } from '../database/schemas/HistoricalStockInfoSchema.js';
-import { getCompanyName, getInstrumentalCode } from '../utils/utilFuntions.js';
+import { getCompanyName } from '../utils/utilFuntions.js';
 
 import { DB_STATUS } from './modelUtils.js';
 
@@ -11,8 +11,7 @@ const insertHistoricalDataDB = async ({ companyName, instrumentalCode, stockExch
   );
   return udpateStatus;
 };
-export const insertHistoricalData = async (stockExchangeCode, data) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
+export const insertHistoricalData = async (stockExchangeCode, instrumentalCode, data) => {
   const companyName = getCompanyName(stockExchangeCode);
   const historicalStockInfo = {
     companyName,

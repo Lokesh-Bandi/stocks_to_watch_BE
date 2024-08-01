@@ -115,3 +115,33 @@ export const rsiForAllQuery = (technicalIndicator) => {
   ];
   return query;
 };
+
+export const instrumentalCodesQuery = () => {
+  const query = [
+    {
+      $project: {
+        stockExchangeCode: 1,
+        instrumentalCode: 1,
+        _id: 0,
+      },
+    },
+  ];
+  return query;
+};
+
+export const instrumentalCodeForSpecificStockQuery = (stockExchangeCode) => {
+  const query = [
+    {
+      $match: {
+        stockExchangeCode,
+      },
+    },
+    {
+      $project: {
+        instrumentalCode: 1,
+        _id: 0,
+      },
+    },
+  ];
+  return query;
+};

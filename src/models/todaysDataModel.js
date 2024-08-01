@@ -1,5 +1,4 @@
 import { HistoricalStockInfo } from '../database/schemas/HistoricalStockInfoSchema.js';
-import { getInstrumentalCode } from '../utils/utilFuntions.js';
 
 import { DB_STATUS } from './modelUtils.js';
 
@@ -29,8 +28,7 @@ const insertTodayDataDB = async ({ instrumentalCode, data }) => {
   return udpateStatus;
 };
 
-export const insertTodayData = async (stockExchangeCode, todayData) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
+export const insertTodayData = async (instrumentalCode, todayData) => {
   const todayStockInfo = {
     instrumentalCode,
     data: todayData,

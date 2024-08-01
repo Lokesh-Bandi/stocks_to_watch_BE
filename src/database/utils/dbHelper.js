@@ -1,10 +1,12 @@
 import { DATA_ATTRIBUTES, ERROR_MESSAGE, MAX_DAYS_DATA } from '../../constants/appConstants.js';
-import { getInstrumentalCode } from '../../utils/utilFuntions.js';
 import { HistoricalStockInfo } from '../schemas/HistoricalStockInfoSchema.js';
+import { InstrumentalCodeModel } from '../schemas/InstrumentalCodeSchema.js';
 import { TechnicalIndicatorsModel } from '../schemas/TechnicalIndicatorsSchema.js';
 
 import {
   completeStockDataQuery,
+  instrumentalCodeForSpecificStockQuery,
+  instrumentalCodesQuery,
   isDataAvailableForTheDateQuery,
   rsiForAllQuery,
   stockAttributeFlattenQuery,
@@ -36,13 +38,8 @@ import {
  * @returns {Promise<Object>} - Returns mongoDB document if exists or null
  */
 export const findOneHistoryDataDocument = async (stockExchangeCode) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
-  if (!instrumentalCode) {
-    console.log(ERROR_MESSAGE.unknownStockCode);
-    return null;
-  }
   try {
-    const doc = await HistoricalStockInfo.findOne({ instrumentalCode });
+    const doc = await HistoricalStockInfo.findOne({ stockExchangeCode });
     if (!doc) {
       console.log(ERROR_MESSAGE.documentNotFound);
       return null;
@@ -86,8 +83,7 @@ export const findOneTechincalIndicatorDocument = async (stockExchangeCode) => {
  * @returns {Promise<boolean>}
  */
 
-export const isDataAvailableForThisDate = async (stockExchangeCode, date) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
+export const isDataAvailableForThisDate = async (instrumentalCode, date) => {
   const query = isDataAvailableForTheDateQuery(instrumentalCode, date);
   try {
     const response = await HistoricalStockInfo.aggregate(query);
@@ -108,9 +104,7 @@ export const isDataAvailableForThisDate = async (stockExchangeCode, date) => {
  * @returns {Promise<number[]>}
  */
 
-export const fetchCustomFlattenDataValuesDB = async (stockExchangeCode, attributeName, noOfDays) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
-
+export const fetchCustomFlattenDataValuesDB = async (instrumentalCode, attributeName, noOfDays) => {
   if (!instrumentalCode) {
     console.log(ERROR_MESSAGE.unknownStockCode);
     return null;
@@ -145,9 +139,7 @@ export const fetchCustomFlattenDataValuesDB = async (stockExchangeCode, attribut
  * @returns {Promise<SingleStockAttibuteResponse[]>}
  */
 
-export const fetchCustomDataValuesDB = async (stockExchangeCode, attributeName, noOfDays) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
-
+export const fetchCustomDataValuesDB = async (instrumentalCode, attributeName, noOfDays) => {
   if (!instrumentalCode) {
     console.log(ERROR_MESSAGE.unknownStockCode);
     return null;
@@ -173,9 +165,7 @@ export const fetchCustomDataValuesDB = async (stockExchangeCode, attributeName, 
  * @returns {Promise<SingleDayDatabaseStockDataObject[]>}
  */
 
-export const fetchCompleteStockDataDB = async (stockExchangeCode, noOfDays = MAX_DAYS_DATA) => {
-  const instrumentalCode = getInstrumentalCode(stockExchangeCode);
-
+export const fetchCompleteStockDataDB = async (instrumentalCode, noOfDays = MAX_DAYS_DATA) => {
   if (!instrumentalCode) {
     console.log(ERROR_MESSAGE.unknownStockCode);
     return null;
@@ -195,6 +185,32 @@ export const fetchTIForAllStocksDB = async (technicalIndicator) => {
     return responseData;
   } catch (e) {
     console.log('Error while querying RSI values', e);
+    return null;
+  }
+};
+
+export const fetchInstrumentalCodesDB = async () => {
+  try {
+    const responseData = await InstrumentalCodeModel.aggregate(instrumentalCodesQuery()).exec();
+    const instrumentalCodesArray = responseData.length > 0 ? responseData : null;
+    const instrumentalCodesObject = instrumentalCodesArray.reduce((acc, eachStock) => {
+      acc[eachStock.stockExchangeCode] = eachStock.instrumentalCode;
+      return acc;
+    }, {});
+    return instrumentalCodesObject;
+  } catch (e) {
+    console.log('Error while querying instrumental codes', e);
+    return null;
+  }
+};
+
+export const fetchInstrumentalCodeForSpecificStockDB = async (stockExchangeCode) => {
+  try {
+    const responseData = await InstrumentalCodeModel.aggregate(instrumentalCodeForSpecificStockQuery(stockExchangeCode));
+    const instrumentalCode = responseData.length > 0 ? responseData[0].instrumentalCode : null;
+    return instrumentalCode;
+  } catch (e) {
+    console.log(`Error while querying instrumental code for ${stockExchangeCode}`, e);
     return null;
   }
 };

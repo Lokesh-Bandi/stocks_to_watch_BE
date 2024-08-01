@@ -14,7 +14,8 @@ const mainController = {
   },
   test: async (req, res) => {
     const { stockExchangeCode } = req.params;
-    const rsiValues = await calculateRSI(stockExchangeCode, TIME_INTERVAL.One_Day);
+    const stockCode = stockExchangeCode.toUpperCase();
+    const rsiValues = await calculateRSI(stockCode, TIME_INTERVAL.One_Day);
     res.send(rsiValues);
   },
 };
