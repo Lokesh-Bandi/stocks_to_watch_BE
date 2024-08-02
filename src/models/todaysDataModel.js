@@ -2,7 +2,7 @@ import { HistoricalStockInfo } from '../database/schemas/HistoricalStockInfoSche
 
 import { DB_STATUS } from './modelUtils.js';
 
-const insertTodayDataDB = async ({ instrumentalCode, data }) => {
+const insertTodayDataDB = async ({ instrumentalCode, data, lastNdays }) => {
   const udpateStatus = await HistoricalStockInfo.updateOne(
     { instrumentalCode },
     {
@@ -21,7 +21,7 @@ const insertTodayDataDB = async ({ instrumentalCode, data }) => {
     { instrumentalCode },
     {
       $pop: {
-        data: 1,
+        data: lastNdays,
       },
     }
   );
@@ -32,9 +32,35 @@ export const insertTodayData = async (instrumentalCode, todayData) => {
   const todayStockInfo = {
     instrumentalCode,
     data: todayData,
+    lastNdays: 1,
   };
   try {
     const acknowledge = await insertTodayDataDB(todayStockInfo);
+    if (acknowledge.upsertedId) {
+      console.log(`Successfully document created for the ${instrumentalCode}`);
+      return { status: DB_STATUS.created, ack: `Successfully document updated for the ${instrumentalCode}` };
+    }
+    console.log(`Successfully document updated for the ${instrumentalCode}`);
+    return {
+      status: DB_STATUS.updated,
+      ack: `Successfully document updated for the ${instrumentalCode}`,
+    };
+  } catch (e) {
+    console.log(`Error updating document for the ${instrumentalCode}`, e);
+    return {
+      status: DB_STATUS.error,
+      ack: `Error updating document for the ${instrumentalCode} --> ${e}`,
+    };
+  }
+};
+
+export const insertLasDaysFromTodayData = async (instrumentalCode, todayData, lastNdays) => {
+  const todayStockInfo = {
+    instrumentalCode,
+    data: todayData,
+  };
+  try {
+    const acknowledge = await insertTodayDataDB(todayStockInfo, lastNdays);
     if (acknowledge.upsertedId) {
       console.log(`Successfully document created for the ${instrumentalCode}`);
       return { status: DB_STATUS.created, ack: `Successfully document updated for the ${instrumentalCode}` };

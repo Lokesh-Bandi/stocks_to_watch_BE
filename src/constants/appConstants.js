@@ -56,6 +56,8 @@ export const ERROR_MESSAGE = {
   documentUpdateError: 'Error updating document',
   unknownTechIndicator: 'Unknown technical indicator',
   noInstrumentalCodes: 'Missing instrumental codes object',
+  missingNoOfDays: 'Missing days param in url',
+  dbNotYetReached: 'Not yet reached the DB',
 };
 
 export const MAX_DAYS_DATA = 50;

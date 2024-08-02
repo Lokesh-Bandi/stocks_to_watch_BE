@@ -71,7 +71,7 @@ const historicalDataController = {
     const apiInstance = await new UpstoxClient.HistoryApi();
     const { status: apiStatus, data: historicalData } = await getHistoricalData(instrumentalCode, apiInstance, TIME_INTERVAL.One_Minute, 50);
 
-    // const { status: dbStatus, ack } = await insertHistoricalData(stockCode, instrumentalCode, historicalData); // DB call
+    const { status: dbStatus, ack } = await insertHistoricalData(stockCode, instrumentalCode, historicalData); // DB call
 
     res.json({
       stockCode: stockExchangeCode,
@@ -79,10 +79,10 @@ const historicalDataController = {
         status: apiStatus,
         ack: historicalData,
       },
-      // db: {
-      //   status: dbStatus,
-      //   ack,
-      // },
+      db: {
+        status: dbStatus,
+        ack,
+      },
     });
   },
   fetchHistoricalDataForParticularDate: async (req, res) => {

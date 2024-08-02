@@ -125,3 +125,36 @@ export const getTodayData = async (stockCode, apiInstance, interval) => {
     };
   }
 };
+
+export const getLastNDaysData = async (stockCode, apiInstance, interval, lastNDays) => {
+  const apiVersion = API_VERSION;
+  const todayDate = getCurrentDate();
+  const toDate = getLastNDaysBackDate(todayDate, 1);
+  const fromDate = getLastNDaysBackDate(todayDate, lastNDays + 7);
+  try {
+    const lastNDaysData = await new Promise((resolve, reject) => {
+      apiInstance.getHistoricalCandleData1(stockCode, interval, toDate, fromDate, apiVersion, (error, data) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          resolve(data.data.candles); // Resolve with the candles data
+        }
+      });
+    }).then((res) => {
+      return res;
+    });
+    const todayWholeData = getLastNTradingDatesHistoricalData(lastNDaysData, lastNDays);
+    const flattenDataToInterval = getFlattenDataToIntervalV2(todayWholeData);
+    return {
+      status: ApiStatus.success,
+      data: flattenDataToInterval,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      status: ApiStatus.error,
+      data: JSON.parse(e.response?.text ?? {}),
+    };
+  }
+};
