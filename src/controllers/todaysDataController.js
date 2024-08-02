@@ -317,17 +317,17 @@ const todaysDataController = {
       return acc;
     }, []);
 
-    // const { status: dbStatus, ack } = await insertLasDaysFromTodayData(instrumentalCode, filteredOutExistingDays, filteredOutExistingDays.length);
+    const { status: dbStatus, ack } = await insertLasDaysFromTodayData(instrumentalCode, filteredOutExistingDays, filteredOutExistingDays.length);
     res.json({
       stockExchangeCode,
       api: {
         status: apiStatus,
         ack: filteredOutExistingDays,
       },
-      // db: {
-      //   status: dbStatus,
-      //   ack,
-      // },
+      db: {
+        status: dbStatus,
+        ack,
+      },
     });
   },
 };
