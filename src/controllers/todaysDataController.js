@@ -133,17 +133,17 @@ const todaysDataController = {
       });
     }
 
-    // const { status: dbStatus, ack } = await insertTodayData(instrumentalCode, todayData);
+    const { status: dbStatus, ack } = await insertTodayData(instrumentalCode, todayData);
     res.json({
       stockExchangeCode,
       api: {
         status: apiStatus,
         ack: todayData,
       },
-      // db: {
-      //   status: dbStatus,
-      //   ack,
-      // },
+      db: {
+        status: dbStatus,
+        ack,
+      },
     });
   },
   updateGroupLastNDaysFromTodayData: async (req, res) => {
@@ -187,13 +187,14 @@ const todaysDataController = {
               ack: ERROR_MESSAGE.dbNotYetReached,
             },
           };
-        const filteredOutExistingDays = await lastNDaysData.reduce(async (acc, eachDayData) => {
-          const isDateExisted = await isDataAvailableForThisDate(instrumentalCode, eachDayData?.date);
-          if (!isDateExisted) {
-            acc.push(eachDayData);
+
+        const filteredOutExistingDays = [];
+        for await (const eachDayData of lastNDaysData) {
+          const isDataExisted = await isDataAvailableForThisDate(instrumentalCode, eachDayData?.date);
+          if (!isDataExisted) {
+            filteredOutExistingDays.push(eachDayData);
           }
-          return acc;
-        }, []);
+        }
 
         if (filteredOutExistingDays.length > 0) {
           const { status: dbStatus, ack } = await insertLasDaysFromTodayData(
@@ -281,54 +282,82 @@ const todaysDataController = {
     const { stockExchangeCode } = req.params;
     const { days } = req.body;
     const stockCode = stockExchangeCode.toUpperCase();
-    const instrumentalCode = await fetchInstrumentalCodeForSpecificStockDB(stockCode);
-    if (!instrumentalCode) {
-      res.send(ERROR_MESSAGE.unknownStockCode);
-      return;
-    }
-    if (!days || !Number.isInteger(parseInt(days))) {
-      res.send(ERROR_MESSAGE.missingNoOfDays);
-      return;
-    }
-    const apiInstance = await new UpstoxClient.HistoryApi();
-    const { status: apiStatus, data: lastNDaysData } = await getLastNDaysData(
-      instrumentalCode,
-      apiInstance,
-      TIME_INTERVAL.One_Minute,
-      parseInt(days)
-    );
-    if (lastNDaysData.length === 0)
-      return {
+    try {
+      const instrumentalCode = await fetchInstrumentalCodeForSpecificStockDB(stockCode);
+      if (!instrumentalCode) {
+        res.send(ERROR_MESSAGE.unknownStockCode);
+        return;
+      }
+      if (!days || !Number.isInteger(parseInt(days))) {
+        res.send(ERROR_MESSAGE.missingNoOfDays);
+        return;
+      }
+      const apiInstance = await new UpstoxClient.HistoryApi();
+      const { status: apiStatus, data: lastNDaysData } = await getLastNDaysData(
+        instrumentalCode,
+        apiInstance,
+        TIME_INTERVAL.One_Minute,
+        parseInt(days)
+      );
+      if (lastNDaysData.length === 0)
+        return {
+          stockExchangeCode,
+          api: {
+            status: ApiStatus.error,
+            ack: lastNDaysData,
+          },
+          db: {
+            status: DB_STATUS.error,
+            ack: ERROR_MESSAGE.dbNotYetReached,
+          },
+        };
+
+      const filteredOutExistingDays = [];
+      for await (const eachDayData of lastNDaysData) {
+        const isDataExisted = await isDataAvailableForThisDate(instrumentalCode, eachDayData?.date);
+        if (!isDataExisted) {
+          filteredOutExistingDays.push(eachDayData);
+        }
+      }
+
+      if (filteredOutExistingDays.length > 0) {
+        const { status: dbStatus, ack } = await insertLasDaysFromTodayData(instrumentalCode, filteredOutExistingDays, filteredOutExistingDays.length);
+        return res.json({
+          stockExchangeCode,
+          api: {
+            status: apiStatus,
+            ack: lastNDaysData,
+          },
+          db: {
+            status: dbStatus,
+            ack,
+          },
+        });
+      }
+      return res.json({
         stockExchangeCode,
         api: {
-          status: ApiStatus.error,
+          status: apiStatus,
           ack: lastNDaysData,
         },
         db: {
           status: DB_STATUS.error,
-          ack: ERROR_MESSAGE.dbNotYetReached,
+          ack: ERROR_MESSAGE.dataAvaiableForTheDate,
         },
-      };
-    const filteredOutExistingDays = await lastNDaysData.reduce(async (acc, eachDayData) => {
-      const isDateExisted = await isDataAvailableForThisDate(instrumentalCode, eachDayData?.date);
-      if (!isDateExisted) {
-        acc.push(eachDayData);
-      }
-      return acc;
-    }, []);
-
-    const { status: dbStatus, ack } = await insertLasDaysFromTodayData(instrumentalCode, filteredOutExistingDays, filteredOutExistingDays.length);
-    res.json({
-      stockExchangeCode,
-      api: {
-        status: apiStatus,
-        ack: filteredOutExistingDays,
-      },
-      db: {
-        status: dbStatus,
-        ack,
-      },
-    });
+      });
+    } catch (e) {
+      res.json({
+        stockExchangeCode,
+        api: {
+          status: ApiStatus.error,
+          ack: ERROR_MESSAGE.controllerError,
+        },
+        db: {
+          status: DB_STATUS.error,
+          ack: ERROR_MESSAGE.controllerError,
+        },
+      });
+    }
   },
 };
 

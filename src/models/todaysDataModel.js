@@ -17,14 +17,18 @@ const insertTodayDataDB = async ({ instrumentalCode, data, lastNdays }) => {
   );
 
   // Pop the 51st trading day data
-  const popAciton = await HistoricalStockInfo.updateOne(
-    { instrumentalCode },
-    {
-      $pop: {
-        data: lastNdays,
-      },
-    }
-  );
+  await Array(lastNdays)
+    .fill(0)
+    .forEach(async () => {
+      await HistoricalStockInfo.updateOne(
+        { instrumentalCode },
+        {
+          $pop: {
+            data: 1,
+          },
+        }
+      );
+    });
   return udpateStatus;
 };
 
@@ -58,9 +62,10 @@ export const insertLasDaysFromTodayData = async (instrumentalCode, todayData, la
   const todayStockInfo = {
     instrumentalCode,
     data: todayData,
+    lastNdays,
   };
   try {
-    const acknowledge = await insertTodayDataDB(todayStockInfo, lastNdays);
+    const acknowledge = await insertTodayDataDB(todayStockInfo);
     if (acknowledge.upsertedId) {
       console.log(`Successfully document created for the ${instrumentalCode}`);
       return { status: DB_STATUS.created, ack: `Successfully document updated for the ${instrumentalCode}` };

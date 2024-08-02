@@ -40,6 +40,7 @@ const stockDataSchema = new mongoose.Schema(
     date: {
       type: String,
       required: true,
+      unique: true,
     },
     stockData: {
       type: OHLCVDSchema,

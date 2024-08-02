@@ -58,6 +58,7 @@ export const ERROR_MESSAGE = {
   noInstrumentalCodes: 'Missing instrumental codes object',
   missingNoOfDays: 'Missing days param in url',
   dbNotYetReached: 'Not yet reached the DB',
+  controllerError: 'Error in controller code',
 };
 
 export const MAX_DAYS_DATA = 50;
