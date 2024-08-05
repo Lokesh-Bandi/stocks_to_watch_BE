@@ -1,6 +1,5 @@
-import { ERROR_MESSAGE } from '../constants/appConstants.js';
+import { DB_STATUS, ERROR_MESSAGE } from '../constants/appConstants.js';
 import { updateOneInstrumentalCodesDB } from '../models/metaDataModel.js';
-import { DB_STATUS } from '../models/modelUtils.js';
 import { getInstrumentalCode, getStockList, isValidStockExchangeCode } from '../utils/utilFuntions.js';
 
 const metaDataController = {

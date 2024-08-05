@@ -1,4 +1,4 @@
-import { ERROR_MESSAGE, TECH_INDICATOR_TIME_INTERVALS, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
+import { DB_STATUS, ERROR_MESSAGE, TECH_INDICATOR_TIME_INTERVALS, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
 import { fetchInstrumentalCodeForSpecificStockDB, fetchInstrumentalCodesDB } from '../database/utils/dbHelper.js';
 import { deriveTechIndicatorDBFuntion } from '../models/modelUtils.js';
 import { updateAllKeyStocks, updateALLTechnicalIndicators } from '../models/technicalIndicatorsModel.js';
@@ -165,7 +165,17 @@ const technicalIndicatorsController = {
         keyStocks: dbUpdationStatusForKeyStocks,
       });
     } catch (e) {
-      res.send(`Error ocurred while computing technical indicators: ${e}`);
+      console.log(`Error ocurred while computing technical indicators: ${e}`);
+      res.json({
+        tiValues: {
+          status: DB_STATUS.error,
+          ack: ERROR_MESSAGE.errorInAllTechInd,
+        },
+        keyStocks: {
+          status: DB_STATUS.error,
+          ack: ERROR_MESSAGE.errorinKeyStocks,
+        },
+      });
     }
   },
 };

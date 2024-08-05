@@ -1,6 +1,5 @@
+import { DB_STATUS } from '../constants/appConstants.js';
 import { InstrumentalCodeModel } from '../database/schemas/InstrumentalCodeSchema.js';
-
-import { DB_STATUS } from './modelUtils.js';
 
 export const coreUpdateAllInstrumentalCodes = async (stockExchangeCode, instrumentalCode) => {
   const updateStatus = await InstrumentalCodeModel.updateOne(

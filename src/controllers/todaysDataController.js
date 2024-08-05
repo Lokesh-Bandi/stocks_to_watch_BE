@@ -1,9 +1,8 @@
 import UpstoxClient from 'upstox-js-sdk';
 
 import { getLastNDaysData, getTodayData } from '../api/upstoxAPI/apiFuntions.js';
-import { ApiStatus, ERROR_MESSAGE, TIME_INTERVAL } from '../constants/appConstants.js';
+import { ApiStatus, DB_STATUS, ERROR_MESSAGE, TIME_INTERVAL } from '../constants/appConstants.js';
 import { fetchInstrumentalCodeForSpecificStockDB, fetchInstrumentalCodesDB, isDataAvailableForThisDate } from '../database/utils/dbHelper.js';
-import { DB_STATUS } from '../models/modelUtils.js';
 import { insertLasDaysFromTodayData, insertTodayData } from '../models/todaysDataModel.js';
 import ApiRateLimiter from '../services/APILimitService.js';
 import { getCurrentDate, getStockList } from '../utils/utilFuntions.js';

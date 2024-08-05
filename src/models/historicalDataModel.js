@@ -1,7 +1,6 @@
+import { DB_STATUS } from '../constants/appConstants.js';
 import { HistoricalStockInfo } from '../database/schemas/HistoricalStockInfoSchema.js';
 import { getCompanyName } from '../utils/utilFuntions.js';
-
-import { DB_STATUS } from './modelUtils.js';
 
 const insertHistoricalDataDB = async ({ companyName, instrumentalCode, stockExchangeCode, data }) => {
   const udpateStatus = await HistoricalStockInfo.updateOne(

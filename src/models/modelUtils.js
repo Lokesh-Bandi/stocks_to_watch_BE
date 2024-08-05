@@ -12,9 +12,3 @@ export const deriveTechIndicatorDBFuntion = (technicalIndicator) => {
       return null;
   }
 };
-
-export const DB_STATUS = {
-  created: 'created',
-  updated: 'updated',
-  error: 'error',
-};

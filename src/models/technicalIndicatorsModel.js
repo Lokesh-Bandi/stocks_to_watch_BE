@@ -1,3 +1,4 @@
+import { DB_STATUS, ERROR_MESSAGE } from '../constants/appConstants.js';
 import { KeyStocksModel } from '../database/schemas/KeyStocksSchema.js';
 import { TechnicalIndicatorsModel } from '../database/schemas/TechnicalIndicatorsSchema.js';
 import { getCurrentDate } from '../utils/utilFuntions.js';
@@ -44,10 +45,16 @@ export const updateALLTechnicalIndicators = async (arrOfStoringObjects) => {
   try {
     const updationResult = await updateALLTechnicalIndicatorsDB(arrOfStoringObjects);
     console.log(updationResult);
-    return updationResult;
+    return {
+      status: DB_STATUS.updated,
+      ack: updationResult,
+    };
   } catch (e) {
     console.log('Error updating all technical indicator values', e);
-    return null;
+    return {
+      status: DB_STATUS.error,
+      ack: ERROR_MESSAGE.errorInAllTechInd,
+    };
   }
 };
 
@@ -108,9 +115,15 @@ const updateAllKeyStocksDB = async (keyStocksObj) => {
 export const updateAllKeyStocks = async (keyStocksObj) => {
   try {
     const updationResult = await updateAllKeyStocksDB(keyStocksObj);
-    return updationResult;
+    return {
+      status: DB_STATUS.updated,
+      ack: updationResult,
+    };
   } catch (e) {
     console.log('Error updating key stocks', e);
-    return null;
+    return {
+      status: DB_STATUS.error,
+      ack: ERROR_MESSAGE.errorinKeyStocks,
+    };
   }
 };

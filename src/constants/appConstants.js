@@ -59,6 +59,8 @@ export const ERROR_MESSAGE = {
   missingNoOfDays: 'Missing days param in url',
   dbNotYetReached: 'Not yet reached the DB',
   controllerError: 'Error in controller code',
+  errorinKeyStocks: 'Error updating key stocks in DB',
+  errorInAllTechInd: 'Error updating all technical indicator values',
 };
 
 export const MAX_DAYS_DATA = 50;
@@ -76,6 +78,12 @@ export const TECH_INDICATOR_TIME_INTERVALS = [TIME_INTERVAL.Fifteen_Minute, TIME
 
 export const ApiStatus = {
   success: 'success',
+  error: 'error',
+};
+
+export const DB_STATUS = {
+  created: 'created',
+  updated: 'updated',
   error: 'error',
 };
 
