@@ -1,3 +1,4 @@
+import { KeyStocksModel } from '../database/schemas/KeyStocksSchema.js';
 import { TechnicalIndicatorsModel } from '../database/schemas/TechnicalIndicatorsSchema.js';
 import { getCurrentDate } from '../utils/utilFuntions.js';
 
@@ -28,6 +29,7 @@ const updateALLTechnicalIndicatorsDB = async (arrOfStoringObjects) => {
         update: {
           $set: {
             ta: tiValues,
+            lastUpdated: getCurrentDate(),
           },
         },
         upsert: true,
@@ -90,5 +92,25 @@ export const updateMFIValueForStocks = async (arr) => {
     });
   } catch (e) {
     console.log(`Error updating document`, e);
+  }
+};
+
+const updateAllKeyStocksDB = async (keyStocksObj) => {
+  await KeyStocksModel.collection.drop();
+  const udpateStatus = await KeyStocksModel.create({
+    ...keyStocksObj,
+    lastUpdated: getCurrentDate(),
+  });
+  console.log('Document inserted:', udpateStatus);
+  return udpateStatus;
+};
+
+export const updateAllKeyStocks = async (keyStocksObj) => {
+  try {
+    const updationResult = await updateAllKeyStocksDB(keyStocksObj);
+    return updationResult;
+  } catch (e) {
+    console.log('Error updating key stocks', e);
+    return null;
   }
 };

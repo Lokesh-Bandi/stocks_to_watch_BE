@@ -70,6 +70,8 @@ export const TECHNICAL_INDICATORS = {
   bollingerbands: 'bollingerbands',
 };
 
+export const TECHNICAL_INDICATORS_ARR = Object.values(TECHNICAL_INDICATORS);
+
 export const TECH_INDICATOR_TIME_INTERVALS = [TIME_INTERVAL.Fifteen_Minute, TIME_INTERVAL.Four_Hour, TIME_INTERVAL.One_Day];
 
 export const ApiStatus = {
@@ -85,4 +87,25 @@ export const bulkUpdateKeys = {
   upsertedCount: 'upsertedCount',
   upsertedIds: 'upsertedIds',
   insertedIds: 'insertedIds',
+};
+
+export const RSI_KEYS = {
+  lessthan30: 'lessthan30',
+  morethan70: 'morethan70',
+  nearTo30: 'nearTo30',
+  nearTo70: 'nearTo70',
+};
+
+export const MFI_KEYS = {
+  lessthan20: 'lessthan20',
+  morethan80: 'morethan80',
+  nearTo20: 'nearTo20',
+  nearTo80: 'nearTo80',
+};
+
+export const BOLLINGERBANDS_KEYS = {
+  lessthan0: 'lessthan0',
+  morethan1: 'morethan1',
+  nearTo0D1: 'nearTo0D1',
+  nearTo0D9: 'nearTo0D9',
 };

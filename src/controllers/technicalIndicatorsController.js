@@ -1,9 +1,9 @@
 import { ERROR_MESSAGE, TECH_INDICATOR_TIME_INTERVALS, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
 import { fetchInstrumentalCodeForSpecificStockDB, fetchInstrumentalCodesDB } from '../database/utils/dbHelper.js';
 import { deriveTechIndicatorDBFuntion } from '../models/modelUtils.js';
-import { updateALLTechnicalIndicators } from '../models/technicalIndicatorsModel.js';
+import { updateAllKeyStocks, updateALLTechnicalIndicators } from '../models/technicalIndicatorsModel.js';
 import { calculateAllTisForTheStock, calculateMFI, calculateOBV, calculateRSI } from '../utils/talib.js';
-import { constructIntervalTechIndicatorStoringObject, deriveTechnicalIndicatorFunction } from '../utils/talibUtils.js';
+import { constructIntervalTechIndicatorStoringObject, deriveTechnicalIndicatorFunction, filterKeyStocksFromIndicators } from '../utils/talibUtils.js';
 import { getStockList, isCorrectTimeInterval } from '../utils/utilFuntions.js';
 
 const technicalIndicatorsController = {
@@ -150,15 +150,22 @@ const technicalIndicatorsController = {
         return;
       }
 
-      ['RVNL'].forEach((stockExchangeCode) => {
+      stockList.forEach((stockExchangeCode) => {
         const instrumentalCode = instrumentalCodes[stockExchangeCode];
         promiseQueue.push(calculateAllTisForTheStock(stockExchangeCode, instrumentalCode));
       });
       const response = await Promise.all(promiseQueue);
-      const dbUpdationStatus = await updateALLTechnicalIndicators(response);
-      res.json(dbUpdationStatus);
+      const dbUpdationStatusForTIValues = await updateALLTechnicalIndicators(response); // technicalIndicatorSchema DB udpate
+
+      const keyStocksForAllTechnicalIndicators = filterKeyStocksFromIndicators(response);
+      const dbUpdationStatusForKeyStocks = await updateAllKeyStocks(keyStocksForAllTechnicalIndicators); // keyStocksSchema DB update
+
+      res.json({
+        tiValues: dbUpdationStatusForTIValues,
+        keyStocks: dbUpdationStatusForKeyStocks,
+      });
     } catch (e) {
-      res.send(`Error ocurred while comuting technical indicators: ${e}`);
+      res.send(`Error ocurred while computing technical indicators: ${e}`);
     }
   },
 };

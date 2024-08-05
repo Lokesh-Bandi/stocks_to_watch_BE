@@ -45,8 +45,9 @@ const technicalIndicatorsSchema = new mongoose.Schema({
     lowercase: false,
   },
   lastUpdated: {
-    type: Date,
+    type: String,
     required: true,
+    default: null,
   },
   ta: {
     type: technicalIndicatorValues,
