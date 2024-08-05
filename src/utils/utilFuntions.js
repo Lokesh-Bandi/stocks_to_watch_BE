@@ -183,6 +183,11 @@ export const getLastNDaysBackDate = (date, n = 0) => {
   return formatDate(dateNDaysAgo);
 };
 
+export const roundToDecimalPlaces = (num, decimalPlaces) => {
+  const factor = 10 ** decimalPlaces;
+  return Math.round(num * factor) / factor;
+};
+
 export const getFlattenData = (stockData) => {
   const storingObject = {
     datetime: [],

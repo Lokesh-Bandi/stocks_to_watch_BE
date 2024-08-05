@@ -1,6 +1,8 @@
 import { ERROR_MESSAGE, TECH_INDICATOR_TIME_INTERVALS, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
+import { fetchInstrumentalCodeForSpecificStockDB, fetchInstrumentalCodesDB } from '../database/utils/dbHelper.js';
 import { deriveTechIndicatorDBFuntion } from '../models/modelUtils.js';
-import { calculateMFI, calculateOBV, calculateRSI } from '../utils/talib.js';
+import { updateALLTechnicalIndicators } from '../models/technicalIndicatorsModel.js';
+import { calculateAllTisForTheStock, calculateMFI, calculateOBV, calculateRSI } from '../utils/talib.js';
 import { constructIntervalTechIndicatorStoringObject, deriveTechnicalIndicatorFunction } from '../utils/talibUtils.js';
 import { getStockList, isCorrectTimeInterval } from '../utils/utilFuntions.js';
 
@@ -14,17 +16,22 @@ const technicalIndicatorsController = {
       return;
     }
     const technicalIndicator = ti.toUpperCase();
+    const instrumentalCode = await fetchInstrumentalCodeForSpecificStockDB(stockCode);
+    if (!instrumentalCode) {
+      res.send(ERROR_MESSAGE.unknownStockCode);
+      return;
+    }
     const timeInterval = isCorrectTimeInterval(interval) ? interval : TIME_INTERVAL.One_Day;
     let technicalIndicatorResponse;
     switch (technicalIndicator) {
       case TECHNICAL_INDICATORS.rsi:
-        technicalIndicatorResponse = await calculateRSI(stockCode, timeInterval, timePeriod);
+        technicalIndicatorResponse = await calculateRSI(stockExchangeCode, instrumentalCode, timeInterval, timePeriod);
         break;
       case TECHNICAL_INDICATORS.mfi:
-        technicalIndicatorResponse = await calculateMFI(stockCode, timeInterval, timePeriod);
+        technicalIndicatorResponse = await calculateMFI(stockExchangeCode, instrumentalCode, timeInterval, timePeriod);
         break;
       case TECHNICAL_INDICATORS.obv:
-        technicalIndicatorResponse = await calculateOBV(stockCode, timeInterval);
+        technicalIndicatorResponse = await calculateOBV(stockExchangeCode, instrumentalCode, timeInterval);
         break;
       default:
         technicalIndicatorResponse = null;
@@ -35,7 +42,10 @@ const technicalIndicatorsController = {
     try {
       const { grp: category } = req.params;
       const stockList = getStockList(category);
+      const instrumentalCodes = await fetchInstrumentalCodesDB();
+      const promiseQueue = [];
       const { ti } = req.query;
+
       if (!ti) {
         res.send(ERROR_MESSAGE.unknownTechIndicator);
         return;
@@ -44,24 +54,25 @@ const technicalIndicatorsController = {
         res.send(ERROR_MESSAGE.unknownStockList);
         return;
       }
-      const computeTechnicalIndicatorFun = deriveTechnicalIndicatorFunction(ti.toUpperCase());
-      const updateDBFuntion = deriveTechIndicatorDBFuntion(ti.toUpperCase());
-
-      if (!computeTechnicalIndicatorFun) {
-        res.send(ERROR_MESSAGE.unknownTechIndicator);
-        return;
-      }
-      if (!updateDBFuntion) {
-        res.send(ERROR_MESSAGE.unknownTechIndicator);
+      if (!instrumentalCodes) {
+        res.send(ERROR_MESSAGE.noInstrumentalCodes);
         return;
       }
 
-      const promiseQueue = [];
+      const technicalIndicator = ti.toUpperCase();
+      const computeTechnicalIndicatorFun = deriveTechnicalIndicatorFunction(technicalIndicator);
+      const updateDBFuntion = deriveTechIndicatorDBFuntion(technicalIndicator);
+
+      if (!computeTechnicalIndicatorFun || !updateDBFuntion) {
+        res.send(ERROR_MESSAGE.unknownTechIndicator);
+        return;
+      }
 
       stockList.forEach((stockExchangeCode) => {
         const intervalPromiseQeue = [];
+        const instrumentalCode = instrumentalCodes[stockExchangeCode];
         TECH_INDICATOR_TIME_INTERVALS.forEach((eachTimeInterval) => {
-          intervalPromiseQeue.push(computeTechnicalIndicatorFun(stockExchangeCode, eachTimeInterval));
+          intervalPromiseQeue.push(computeTechnicalIndicatorFun(stockExchangeCode, instrumentalCode, eachTimeInterval));
         });
         promiseQueue.push(intervalPromiseQeue);
       });
@@ -84,11 +95,18 @@ const technicalIndicatorsController = {
     try {
       const { stockExchangeCode } = req.params;
       const stockCode = stockExchangeCode.toUpperCase();
+      const instrumentalCode = await fetchInstrumentalCodeForSpecificStockDB(stockCode);
       const { ti } = req.query;
+
       if (!ti) {
         res.send(ERROR_MESSAGE.unknownTechIndicator);
         return;
       }
+      if (!instrumentalCode) {
+        res.send(ERROR_MESSAGE.unknownStockCode);
+        return;
+      }
+
       const technicalIndicator = ti.toUpperCase();
       const computeTechnicalIndicatorFun = deriveTechnicalIndicatorFunction(technicalIndicator);
       const updateDBFuntion = deriveTechIndicatorDBFuntion(technicalIndicator);
@@ -104,7 +122,7 @@ const technicalIndicatorsController = {
       }
 
       TECH_INDICATOR_TIME_INTERVALS.forEach((eachTimeInterval) => {
-        promiseQueue.push(computeTechnicalIndicatorFun(stockCode, eachTimeInterval));
+        promiseQueue.push(computeTechnicalIndicatorFun(stockExchangeCode, instrumentalCode, eachTimeInterval));
       });
 
       const indicatorResponse = await Promise.all(promiseQueue);
@@ -114,6 +132,33 @@ const technicalIndicatorsController = {
       res.send(techIndicatorStoringObject);
     } catch (e) {
       res.send(`Error ocurred : ${e}`);
+    }
+  },
+  updateAllTechnicalIndicators: async (req, res) => {
+    try {
+      const { grp: category } = req.params;
+      const stockList = getStockList(category);
+      const promiseQueue = [];
+      const instrumentalCodes = await fetchInstrumentalCodesDB();
+
+      if (!stockList) {
+        res.send(ERROR_MESSAGE.unknownStockList);
+        return;
+      }
+      if (!instrumentalCodes) {
+        res.send(ERROR_MESSAGE.noInstrumentalCodes);
+        return;
+      }
+
+      ['RVNL'].forEach((stockExchangeCode) => {
+        const instrumentalCode = instrumentalCodes[stockExchangeCode];
+        promiseQueue.push(calculateAllTisForTheStock(stockExchangeCode, instrumentalCode));
+      });
+      const response = await Promise.all(promiseQueue);
+      const dbUpdationStatus = await updateALLTechnicalIndicators(response);
+      res.json(dbUpdationStatus);
+    } catch (e) {
+      res.send(`Error ocurred while comuting technical indicators: ${e}`);
     }
   },
 };

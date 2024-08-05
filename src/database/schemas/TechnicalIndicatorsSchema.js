@@ -1,19 +1,19 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 import { TIME_INTERVAL } from '../../constants/appConstants.js';
 
 const timeIntervalObjectSchema = new mongoose.Schema(
   {
     [TIME_INTERVAL.Fifteen_Minute]: {
-      type: Number,
+      type: Schema.Types.Mixed,
       default: null,
     },
     [TIME_INTERVAL.Four_Hour]: {
-      type: Number,
+      type: Schema.Types.Mixed,
       default: null,
     },
     [TIME_INTERVAL.One_Day]: {
-      type: Number,
+      type: Schema.Types.Mixed,
       default: null,
     },
   },
@@ -26,6 +26,10 @@ const technicalIndicatorValues = new mongoose.Schema(
       default: null,
     },
     mfi: {
+      type: timeIntervalObjectSchema,
+      default: null,
+    },
+    bollingerbands: {
       type: timeIntervalObjectSchema,
       default: null,
     },

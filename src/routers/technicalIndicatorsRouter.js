@@ -8,6 +8,7 @@ const routes = {
   stockCode: '/:stockExchangeCode',
   singleDBUpdate: '/one/:stockExchangeCode',
   allDBUpdate: '/all/:grp',
+  techInds: '/tis/:grp',
 };
 
 router.get('/', (req, res) => {
@@ -18,6 +19,8 @@ router.get('/', (req, res) => {
 router.get(routes.stockCode, technicalIndicatorsController.fetchTechnicalIndicatorValue);
 // http://localhost:3000/ta/one/RVNL?ti=mfi
 router.get(routes.singleDBUpdate, technicalIndicatorsController.updateCustomTIValueForSingleStock);
+// http://localhost:3000/ta/tis/nifty500
+router.post(routes.techInds, technicalIndicatorsController.updateAllTechnicalIndicators);
 // http://localhost:3000/ta/all/nifty500?ti=mfi
 router.get(routes.allDBUpdate, technicalIndicatorsController.updateGroupCustomTIValue);
 

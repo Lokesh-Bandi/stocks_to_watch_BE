@@ -78,7 +78,7 @@ export const findOneTechincalIndicatorDocument = async (stockExchangeCode) => {
 /**
  * Function to check if data exists for a particular date for a stock.
  * @async
- * @param {string} stockExchangeCode
+ * @param {string} instrumentalCode
  * @param {string} date - The date string in yyyy-mm-dd format.
  * @returns {Promise<boolean>}
  */
@@ -98,7 +98,7 @@ export const isDataAvailableForThisDate = async (instrumentalCode, date) => {
 /**
  * Funtion to fetch a stock atribute flatten values for mentioned no of days
  * @async
- * @param {string} stockExchangeCode
+ * @param {string} instrumentalCode
  * @param {string} attributeName - Should be one of the DATA_ATTRIBUTES values
  * @param {number} noOfDays - Data needed for mentioned no of days
  * @returns {Promise<number[]>}
@@ -133,7 +133,7 @@ export const fetchCustomFlattenDataValuesDB = async (instrumentalCode, attribute
 /**
  * Function to retrieve stock attribute values for a specified number of days.
  * @async
- * @param {string} stockExchangeCode
+ * @param {string} instrumentalCode
  * @param {string} attributeName - Should be one of the DATA_ATTRIBUTES values
  * @param {number} noOfDays - stock data to fetch for mentioned no of days
  * @returns {Promise<SingleStockAttibuteResponse[]>}
@@ -160,7 +160,7 @@ export const fetchCustomDataValuesDB = async (instrumentalCode, attributeName, n
 /**
  * Function to fetch stock data for a specified number of days.
  * @async
- * @param {string} stockExchangeCode
+ * @param {string} instrumentalCode
  * @param {number} [noOfDays] - Fetch stock data for a specified number of days
  * @returns {Promise<SingleDayDatabaseStockDataObject[]>}
  */

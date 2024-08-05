@@ -18,6 +18,36 @@ const updateMFIToDB = async (stockExchangeCode, mfiValues) => {
   );
   return udpateStatus;
 };
+const updateALLTechnicalIndicatorsDB = async (arrOfStoringObjects) => {
+  const structuredUpdateOperationArray = arrOfStoringObjects.map(({ stockExchangeCode, tiValues }) => {
+    return {
+      updateOne: {
+        filter: {
+          stockExchangeCode,
+        },
+        update: {
+          $set: {
+            ta: tiValues,
+          },
+        },
+        upsert: true,
+      },
+    };
+  });
+  const udpateStatus = await TechnicalIndicatorsModel.bulkWrite(structuredUpdateOperationArray);
+  return udpateStatus;
+};
+
+export const updateALLTechnicalIndicators = async (arrOfStoringObjects) => {
+  try {
+    const updationResult = await updateALLTechnicalIndicatorsDB(arrOfStoringObjects);
+    console.log(updationResult);
+    return updationResult;
+  } catch (e) {
+    console.log('Error updating all technical indicator values', e);
+    return null;
+  }
+};
 
 export const updateRSIValueForStocks = async (arr) => {
   const allStocksRsiValues = Object.entries(arr);

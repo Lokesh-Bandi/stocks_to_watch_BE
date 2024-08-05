@@ -64,9 +64,10 @@ export const ERROR_MESSAGE = {
 export const MAX_DAYS_DATA = 50;
 
 export const TECHNICAL_INDICATORS = {
-  rsi: 'RSI',
-  mfi: 'MFI',
-  obv: 'OBV',
+  rsi: 'rsi',
+  mfi: 'mfi',
+  obv: 'obv',
+  bollingerbands: 'bollingerbands',
 };
 
 export const TECH_INDICATOR_TIME_INTERVALS = [TIME_INTERVAL.Fifteen_Minute, TIME_INTERVAL.Four_Hour, TIME_INTERVAL.One_Day];
@@ -74,4 +75,14 @@ export const TECH_INDICATOR_TIME_INTERVALS = [TIME_INTERVAL.Fifteen_Minute, TIME
 export const ApiStatus = {
   success: 'success',
   error: 'error',
+};
+
+export const bulkUpdateKeys = {
+  insertedCount: 'insertedCount',
+  matchedCount: 'matchedCount',
+  modifiedCount: 'modifiedCount',
+  deletedCount: 'deletedCount',
+  upsertedCount: 'upsertedCount',
+  upsertedIds: 'upsertedIds',
+  insertedIds: 'insertedIds',
 };
