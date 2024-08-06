@@ -6,6 +6,7 @@ const router = express.Router();
 
 const routes = {
   ti_all: '/ti',
+  keyStocks: '/key-stocks',
 };
 
 router.get('/', (req, res) => {
@@ -15,5 +16,6 @@ router.get('/', (req, res) => {
 // http://localhost:3000/ui/ti?ti=mfi
 // http://localhost:3000/ui/ti?ti=rsi
 router.get(routes.ti_all, uiController.fetchConsolidatedTechnicalIdicatorValues);
+router.get(routes.keyStocks, uiController.fetchAllKeyStocks);
 
 export default router;

@@ -1,6 +1,7 @@
 import { DATA_ATTRIBUTES, ERROR_MESSAGE, MAX_DAYS_DATA } from '../../constants/appConstants.js';
 import { HistoricalStockInfo } from '../schemas/HistoricalStockInfoSchema.js';
 import { InstrumentalCodeModel } from '../schemas/InstrumentalCodeSchema.js';
+import { KeyStocksModel } from '../schemas/KeyStocksSchema.js';
 import { TechnicalIndicatorsModel } from '../schemas/TechnicalIndicatorsSchema.js';
 
 import {
@@ -211,6 +212,16 @@ export const fetchInstrumentalCodeForSpecificStockDB = async (stockExchangeCode)
     return instrumentalCode;
   } catch (e) {
     console.log(`Error while querying instrumental code for ${stockExchangeCode}`, e);
+    return null;
+  }
+};
+
+export const fetchAllKeyStocksDB = async () => {
+  try {
+    const responseData = await KeyStocksModel.findOne({}, { _id: 0, __v: 0 });
+    return responseData ?? null;
+  } catch (e) {
+    console.log('Error while fetching keyStocks', e);
     return null;
   }
 };
