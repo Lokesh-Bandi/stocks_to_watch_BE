@@ -16,6 +16,7 @@ router.get('/', (req, res) => {
 // http://localhost:3000/ui/ti?ti=mfi
 // http://localhost:3000/ui/ti?ti=rsi
 router.get(routes.ti_all, uiController.fetchConsolidatedTechnicalIdicatorValues);
+// http://localhost:3000/ui/key-stocks
 router.get(routes.keyStocks, uiController.fetchAllKeyStocks);
 
 export default router;
