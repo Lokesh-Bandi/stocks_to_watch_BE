@@ -90,7 +90,7 @@ export const coreRSICalc = (attributesObj) => {
     values: attributesObj.close,
   };
   const rsiValues = RSI.calculate(inputValues) ?? [];
-  const finalRSIValue = rsiValues.at(-1) ? rsiValues.at(-1) : INVALID_VALUE;
+  const finalRSIValue = rsiValues.at(-1) !== undefined ? rsiValues.at(-1) : INVALID_VALUE;
   return finalRSIValue;
 };
 
@@ -104,7 +104,7 @@ export const coreMFICalc = (attributesObj) => {
   };
   const msiValues = MFI.calculate(msiInput) ?? [];
 
-  const finalMFIValue = msiValues.at(-1) ? msiValues.at(-1) : INVALID_VALUE;
+  const finalMFIValue = msiValues.at(-1) !== undefined ? msiValues.at(-1) : INVALID_VALUE;
   return finalMFIValue;
 };
 
@@ -129,7 +129,6 @@ export const coreBollingerBandsCalc = (attributesObj) => {
 export const calculateAllTisForTheStock = async (stockExchangeCode, instrumentalCode) => {
   try {
     const fetchedData = await fetchCompleteStockDataDB(instrumentalCode, MAX_DAYS_DATA);
-
     const TechnicalIndicators = [TECHNICAL_INDICATORS.rsi, TECHNICAL_INDICATORS.mfi, TECHNICAL_INDICATORS.bollingerbands];
     const Intervals = [TIME_INTERVAL.Fifteen_Minute, TIME_INTERVAL.Four_Hour, TIME_INTERVAL.One_Day];
 

@@ -14,7 +14,7 @@ export const constructUIResponseObjectForRSI = async () => {
 export const fetchAllKeyStocksFromDB = async () => {
   try {
     const dbResponseData = await fetchAllKeyStocksDB();
-    return dbResponseData;
+    return dbResponseData.toJSON();
   } catch (e) {
     console.log('Error while fetching keyStocks', e);
     return null;

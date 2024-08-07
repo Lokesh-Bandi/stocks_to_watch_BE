@@ -1,6 +1,7 @@
 import { ERROR_MESSAGE, TECHNICAL_INDICATORS } from '../constants/appConstants.js';
 import { fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
 import { constructUIResponseObjectForRSI, fetchAllKeyStocksFromDB, fetchCoreDataForAllDB } from '../models/uiModel.js';
+import { sortBollingerBandsStocks, sortMfiKeyStocks, sortRsiKeyStocks } from '../utils/talibUtils.js';
 
 const uiController = {
   fetchConsolidatedTechnicalIdicatorValues: async (req, res) => {
@@ -25,7 +26,17 @@ const uiController = {
   },
   fetchAllKeyStocks: async (req, res) => {
     const keyStocks = await fetchAllKeyStocksFromDB();
-    res.json(keyStocks);
+    if (!keyStocks) return res.json(null);
+    const sortedRsi = sortRsiKeyStocks(keyStocks.rsi);
+    const sortedMfi = sortMfiKeyStocks(keyStocks.mfi);
+    const sortedBollingerBands = sortBollingerBandsStocks(keyStocks.bollingerbands);
+    const sortedObj = {
+      ...keyStocks,
+      rsi: sortedRsi,
+      mfi: sortedMfi,
+      bollingerbands: sortedBollingerBands,
+    };
+    res.send(sortedObj);
   },
   fetchCoreDataForAllStocks: async (req, res) => {
     const coreData = await fetchCoreDataForAllDB();

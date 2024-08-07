@@ -190,3 +190,51 @@ export const filterKeyStocksFromIndicators = (allStocks) => {
   });
   return keyStocks;
 };
+
+export const sortRsiKeyStocks = (rsiObj) => {
+  const timeIntervals = Object.keys(rsiObj);
+  const sortedRsi = timeIntervals.reduce((acc, eachTimeInterval) => {
+    const { lessthan30, morethan70, nearTo30, nearTo70 } = rsiObj[eachTimeInterval];
+    const sortedIntervalRsi = {
+      lessthan30: [...lessthan30.sort((a, b) => a.value - b.value)],
+      morethan70: [...morethan70.sort((a, b) => b.value - a.value)],
+      nearTo30: [...nearTo30.sort((a, b) => a.value - b.value)],
+      nearTo70: [...nearTo70.sort((a, b) => b.value - a.value)],
+    };
+    acc[eachTimeInterval] = sortedIntervalRsi;
+    return acc;
+  }, {});
+  return sortedRsi;
+};
+
+export const sortMfiKeyStocks = (mfiObj) => {
+  const timeIntervals = Object.keys(mfiObj);
+  const sortedMfi = timeIntervals.reduce((acc, eachTimeInterval) => {
+    const { lessthan20, morethan80, nearTo20, nearTo80 } = mfiObj[eachTimeInterval];
+    const sortedIntervalMfi = {
+      lessthan20: [...lessthan20.sort((a, b) => a.value - b.value)],
+      morethan80: [...morethan80.sort((a, b) => b.value - a.value)],
+      nearTo20: [...nearTo20.sort((a, b) => a.value - b.value)],
+      nearTo80: [...nearTo80.sort((a, b) => b.value - a.value)],
+    };
+    acc[eachTimeInterval] = sortedIntervalMfi;
+    return acc;
+  }, {});
+  return sortedMfi;
+};
+
+export const sortBollingerBandsStocks = (bbObj) => {
+  const timeIntervals = Object.keys(bbObj);
+  const sortedBB = timeIntervals.reduce((acc, eachTimeInterval) => {
+    const { lessthan0, morethan1, nearTo0D1, nearTo0D9 } = bbObj[eachTimeInterval];
+    const sortedIntervalBB = {
+      lessthan0: [...lessthan0.sort((a, b) => a.value.pb - b.value.pb)],
+      morethan1: [...morethan1.sort((a, b) => b.value.pb - a.value.pb)],
+      nearTo0D1: [...nearTo0D1.sort((a, b) => a.value.pb - b.value.pb)],
+      nearTo0D9: [...nearTo0D9.sort((a, b) => b.value.pb - a.value.pb)],
+    };
+    acc[eachTimeInterval] = sortedIntervalBB;
+    return acc;
+  }, {});
+  return sortedBB;
+};
