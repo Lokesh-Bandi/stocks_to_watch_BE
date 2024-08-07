@@ -151,6 +151,7 @@ export const coreDataQuery = () => {
     {
       $project: {
         _id: 0,
+        stockExchangeCode: 1,
         companyName: 1,
         lastTradedPrice: 1,
       },

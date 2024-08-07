@@ -29,7 +29,16 @@ const uiController = {
   },
   fetchCoreDataForAllStocks: async (req, res) => {
     const coreData = await fetchCoreDataForAllDB();
-    res.json(coreData);
+    if (!coreData) return res.json(null);
+    const structuredResponseData = coreData.reduce((acc, eachStockData) => {
+      const { stockExchangeCode, companyName, lastTradedPrice } = eachStockData;
+      acc[stockExchangeCode] = {
+        companyName,
+        lastTradedPrice,
+      };
+      return acc;
+    }, {});
+    res.json(structuredResponseData);
   },
 };
 
