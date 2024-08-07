@@ -60,6 +60,10 @@ const historicalStockInfo = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  lastTradedPrice: {
+    type: Number,
+    required: true,
+  },
   stockExchangeCode: {
     type: String,
     required: true,

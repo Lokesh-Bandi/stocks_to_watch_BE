@@ -5,7 +5,7 @@ import { getCompanyName } from '../utils/utilFuntions.js';
 const insertHistoricalDataDB = async ({ companyName, instrumentalCode, stockExchangeCode, data }) => {
   const udpateStatus = await HistoricalStockInfo.updateOne(
     { stockExchangeCode },
-    { $set: { companyName, instrumentalCode, stockExchangeCode, data } },
+    { $set: { companyName, instrumentalCode, stockExchangeCode, data, lastTradedPrice: data[0].stockData.close[0] } },
     { upsert: true } // Create a new document if no document matches
   );
   return udpateStatus;

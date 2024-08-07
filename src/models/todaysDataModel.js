@@ -5,6 +5,9 @@ const insertTodayDataDB = async ({ instrumentalCode, data, lastNdays }) => {
   const udpateStatus = await HistoricalStockInfo.updateOne(
     { instrumentalCode },
     {
+      $set: {
+        lastTradedPrice: data[0].stockData.close[0],
+      },
       $push: {
         data: {
           $each: data,
