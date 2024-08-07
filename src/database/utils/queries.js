@@ -145,3 +145,16 @@ export const instrumentalCodeForSpecificStockQuery = (stockExchangeCode) => {
   ];
   return query;
 };
+
+export const coreDataQuery = () => {
+  const query = [
+    {
+      $project: {
+        _id: 0,
+        companyName: 1,
+        lastTradedPrice: 1,
+      },
+    },
+  ];
+  return query;
+};

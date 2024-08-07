@@ -1,5 +1,5 @@
 import { TECHNICAL_INDICATORS } from '../constants/appConstants.js';
-import { fetchAllKeyStocksDB, fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
+import { fetchAllKeyStocksDB, fetchCoreDataForAllStocksDB, fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
 
 export const constructUIResponseObjectForRSI = async () => {
   try {
@@ -17,6 +17,16 @@ export const fetchAllKeyStocksFromDB = async () => {
     return dbResponseData;
   } catch (e) {
     console.log('Error while fetching keyStocks', e);
+    return null;
+  }
+};
+
+export const fetchCoreDataForAllDB = async () => {
+  try {
+    const dbResponseData = await fetchCoreDataForAllStocksDB();
+    return dbResponseData;
+  } catch (e) {
+    console.log('Error while fetching core data', e);
     return null;
   }
 };

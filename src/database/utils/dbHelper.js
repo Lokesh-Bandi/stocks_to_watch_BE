@@ -6,6 +6,7 @@ import { TechnicalIndicatorsModel } from '../schemas/TechnicalIndicatorsSchema.j
 
 import {
   completeStockDataQuery,
+  coreDataQuery,
   instrumentalCodeForSpecificStockQuery,
   instrumentalCodesQuery,
   isDataAvailableForTheDateQuery,
@@ -222,6 +223,16 @@ export const fetchAllKeyStocksDB = async () => {
     return responseData ?? null;
   } catch (e) {
     console.log('Error while fetching keyStocks', e);
+    return null;
+  }
+};
+
+export const fetchCoreDataForAllStocksDB = async () => {
+  try {
+    const responseData = await HistoricalStockInfo.aggregate(coreDataQuery());
+    return responseData ?? null;
+  } catch (e) {
+    console.log('Error while fetching core data', e);
     return null;
   }
 };

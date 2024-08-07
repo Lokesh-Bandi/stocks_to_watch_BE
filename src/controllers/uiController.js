@@ -1,6 +1,6 @@
 import { ERROR_MESSAGE, TECHNICAL_INDICATORS } from '../constants/appConstants.js';
 import { fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
-import { constructUIResponseObjectForRSI, fetchAllKeyStocksFromDB } from '../models/uiModel.js';
+import { constructUIResponseObjectForRSI, fetchAllKeyStocksFromDB, fetchCoreDataForAllDB } from '../models/uiModel.js';
 
 const uiController = {
   fetchConsolidatedTechnicalIdicatorValues: async (req, res) => {
@@ -26,6 +26,10 @@ const uiController = {
   fetchAllKeyStocks: async (req, res) => {
     const keyStocks = await fetchAllKeyStocksFromDB();
     res.json(keyStocks);
+  },
+  fetchCoreDataForAllStocks: async (req, res) => {
+    const coreData = await fetchCoreDataForAllDB();
+    res.json(coreData);
   },
 };
 
