@@ -20,7 +20,7 @@ mainRouter.use(`/${ROUTES.ui}`, uiRouter);
 mainRouter.use(`/${ROUTES.meta}`, metaDataRouter);
 
 mainRouter.get('/', (req, res) => {
-  res.send('Welcome to the server!!');
+  res.send('Welcome to the Amazon EC2 instance!!');
 });
 
 export default mainRouter;
