@@ -89,10 +89,10 @@ const getMfiStatusForAStock = (value) => {
   if (value >= 80) {
     return MFI_KEYS.morethan80;
   }
-  if (value > 20 && value <= 40) {
+  if (value > 20 && value <= 30) {
     return MFI_KEYS.nearTo20;
   }
-  if (value < 80 && value >= 60) {
+  if (value < 80 && value >= 70) {
     return MFI_KEYS.nearTo80;
   }
   return null;
