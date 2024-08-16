@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-import { TIME_INTERVAL } from '../../constants/appConstants.js';
+import { STOCK_MARKET_MOVEMENT, TIME_INTERVAL } from '../../constants/appConstants.js';
 
 const timeIntervalObjectSchema = new mongoose.Schema(
   {
@@ -53,6 +53,10 @@ const technicalIndicatorsSchema = new mongoose.Schema({
     type: technicalIndicatorValues,
     required: true,
     default: null,
+  },
+  momentum: {
+    type: String,
+    default: STOCK_MARKET_MOVEMENT.neutral,
   },
 });
 

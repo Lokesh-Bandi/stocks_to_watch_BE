@@ -159,3 +159,16 @@ export const coreDataQuery = () => {
   ];
   return query;
 };
+
+export const momentumStocksQuery = () => {
+  const query = [
+    {
+      $project: {
+        _id: 0,
+        stockExchangeCode: 1,
+        momentum: 1,
+      },
+    },
+  ];
+  return query;
+};

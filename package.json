@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
+    "build": "NODE_ENV=production PORT=80 node src/app.js",
     "lint": "eslint --fix \"./src/**/*.{js,json}\"",
     "format": "prettier --write \"./src/**/*.{js,json}\"",
     "test": "jest"

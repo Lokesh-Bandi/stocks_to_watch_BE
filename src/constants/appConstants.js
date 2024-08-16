@@ -117,3 +117,9 @@ export const BOLLINGERBANDS_KEYS = {
   nearTo0D1: 'nearTo0D1',
   nearTo0D9: 'nearTo0D9',
 };
+
+export const STOCK_MARKET_MOVEMENT = {
+  bearish: 'Bearish',
+  bullish: 'Bullish',
+  neutral: 'Neutral',
+};

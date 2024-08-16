@@ -7,7 +7,6 @@ import { connectDB } from './database/connections/connectDB.js';
 import mainRouter from './routers/mainRouter.js';
 
 const app = express();
-const PORT = 3000;
 
 app.use(cors());
 app.use(
@@ -25,6 +24,7 @@ connectDB();
 
 app.use('/', mainRouter);
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on ${PORT} port`);
+const port = process.env.PORT || 3000;
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on ${port} port`);
 });

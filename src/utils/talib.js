@@ -1,6 +1,6 @@
-import { BollingerBands, MFI, OBV, RSI } from 'technicalindicators';
+import { bearish, BollingerBands, bullish, MFI, OBV, RSI } from 'technicalindicators';
 
-import { DATA_ATTRIBUTES, MAX_DAYS_DATA, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
+import { DATA_ATTRIBUTES, MAX_DAYS_DATA, STOCK_MARKET_MOVEMENT, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
 import { fetchCompleteStockDataDB, fetchCustomDataValuesDB } from '../database/utils/dbHelper.js';
 
 import {
@@ -131,7 +131,7 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
     const fetchedData = await fetchCompleteStockDataDB(instrumentalCode, MAX_DAYS_DATA);
     const TechnicalIndicators = [TECHNICAL_INDICATORS.rsi, TECHNICAL_INDICATORS.mfi, TECHNICAL_INDICATORS.bollingerbands];
     const Intervals = [TIME_INTERVAL.Fifteen_Minute, TIME_INTERVAL.Four_Hour, TIME_INTERVAL.One_Day];
-
+    let momentumStatus = STOCK_MARKET_MOVEMENT.neutral;
     const tiValues = TechnicalIndicators.reduce((acc, eachTI) => {
       acc[eachTI] = {};
       return acc;
@@ -174,11 +174,26 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
           }
         }
       });
+
+      if (eachInterval === TIME_INTERVAL.One_Day) {
+        const isBullish = bullish(intervalStockData);
+        const isBearish = bearish(intervalStockData);
+        // eslint-disable-next-line no-nested-ternary
+        momentumStatus =
+          isBullish && isBearish
+            ? STOCK_MARKET_MOVEMENT.neutral
+            : isBullish
+              ? STOCK_MARKET_MOVEMENT.bullish
+              : isBearish
+                ? STOCK_MARKET_MOVEMENT.bearish
+                : STOCK_MARKET_MOVEMENT.neutral;
+      }
     });
 
     return {
       stockExchangeCode,
       tiValues,
+      momentumStatus,
     };
   } catch (e) {
     console.log(`Error while calculating MFI values ${stockExchangeCode}`, e);

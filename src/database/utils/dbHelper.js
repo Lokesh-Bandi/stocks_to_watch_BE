@@ -10,6 +10,7 @@ import {
   instrumentalCodeForSpecificStockQuery,
   instrumentalCodesQuery,
   isDataAvailableForTheDateQuery,
+  momentumStocksQuery,
   rsiForAllQuery,
   stockAttributeFlattenQuery,
   stockAttributeQuery,
@@ -233,6 +234,16 @@ export const fetchCoreDataForAllStocksDB = async () => {
     return responseData ?? null;
   } catch (e) {
     console.log('Error while fetching core data', e);
+    return null;
+  }
+};
+
+export const fetchMomentumStocks = async () => {
+  try {
+    const responseData = await TechnicalIndicatorsModel.aggregate(momentumStocksQuery());
+    return responseData ?? null;
+  } catch (e) {
+    console.log('Error while fetching momentum stocks', e);
     return null;
   }
 };

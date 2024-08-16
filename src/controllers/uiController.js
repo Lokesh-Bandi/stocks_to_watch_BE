@@ -1,5 +1,5 @@
 import { ERROR_MESSAGE, TECHNICAL_INDICATORS } from '../constants/appConstants.js';
-import { fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
+import { fetchMomentumStocks, fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
 import { constructUIResponseObjectForRSI, fetchAllKeyStocksFromDB, fetchCoreDataForAllDB } from '../models/uiModel.js';
 import { sortBollingerBandsStocks, sortMfiKeyStocks, sortRsiKeyStocks } from '../utils/talibUtils.js';
 
@@ -47,6 +47,16 @@ const uiController = {
         companyName,
         lastTradedPrice,
       };
+      return acc;
+    }, {});
+    res.json(structuredResponseData);
+  },
+  fetchMomentumStocks: async (req, res) => {
+    const momentumStocks = await fetchMomentumStocks();
+    if (!momentumStocks) return res.json(null);
+    const structuredResponseData = momentumStocks.reduce((acc, eachStockData) => {
+      const { stockExchangeCode, momentum } = eachStockData;
+      acc[stockExchangeCode] = momentum;
       return acc;
     }, {});
     res.json(structuredResponseData);
