@@ -163,6 +163,7 @@ const technicalIndicatorsController = {
       res.json({
         tiValues: dbUpdationStatusForTIValues,
         keyStocks: dbUpdationStatusForKeyStocks,
+        ta: response,
       });
     } catch (e) {
       console.log(`Error ocurred while computing technical indicators: ${e}`);

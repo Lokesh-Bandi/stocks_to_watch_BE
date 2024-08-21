@@ -142,24 +142,35 @@ export const coreBollingerBandsCalc = (attributesObj) => {
 
 export const coreVolumeSpike = (attributesObj) => {
   const lastNCandlesVolume = 20;
-  const multiplies = 2;
+  const multiplier = 3;
   const { close, volume } = attributesObj;
   const volumeTradedToday = volume.at(-1) ? volume.at(-1) : 0;
   const lastNCandlesVolumeArray = volume.slice(-lastNCandlesVolume + 1, -1) ?? [];
   const totalVolume = lastNCandlesVolumeArray.reduce((acc, eachCandleVolume) => {
-    return acc + eachCandleVolume;
+    if (eachCandleVolume) return acc + eachCandleVolume;
+    return acc;
   }, 0);
   const avgVolume = totalVolume / lastNCandlesVolume;
+  const volumeChangedBy = roundToDecimalPlaces(volumeTradedToday / avgVolume, 2);
   const priceTrend = close.at(-2) > close.at(-1) ? PRICE_TREND.down : PRICE_TREND.up;
-  if (volumeTradedToday >= avgVolume * multiplies) {
+  if (volumeTradedToday >= avgVolume * multiplier) {
+    if (PRICE_TREND.down === priceTrend) {
+      return {
+        volume: volumeTradedToday,
+        volumeTrend: VOLUME_TREND.downTrend,
+        volumeChangedBy,
+      };
+    }
     return {
       volume: volumeTradedToday,
-      volumeTrend: priceTrend === PRICE_TREND.down ? VOLUME_TREND.down : VOLUME_TREND.up,
+      volumeTrend: VOLUME_TREND.upTrend,
+      volumeChangedBy,
     };
   }
   return {
     volume: volumeTradedToday,
     volumeTrend: VOLUME_TREND.neutral,
+    volumeChangedBy,
   };
 };
 

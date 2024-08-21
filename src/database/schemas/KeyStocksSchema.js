@@ -37,6 +37,11 @@ const keyStocksSchema = new mongoose.Schema({
     default: null,
     unique: true,
   },
+  volumeSpike: {
+    type: intervalSchema,
+    default: null,
+    unique: true,
+  },
   lastUpdated: {
     type: String,
     required: true,

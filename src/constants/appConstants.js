@@ -79,8 +79,8 @@ export const PRICE_TREND = {
 };
 
 export const VOLUME_TREND = {
-  up: 'up',
-  down: 'down',
+  upTrend: 'upTrend',
+  downTrend: 'downTrend',
   neutral: 'neutral',
 };
 
@@ -128,6 +128,12 @@ export const BOLLINGERBANDS_KEYS = {
   morethan1: 'morethan1',
   nearTo0D1: 'nearTo0D1',
   nearTo0D9: 'nearTo0D9',
+};
+
+export const VOLUME_SPIKE_KEYS = {
+  upTrend: 'upTrend',
+  downTrend: 'downTrend',
+  neutral: 'neutral',
 };
 
 export const STOCK_MARKET_MOVEMENT = {

@@ -5,6 +5,7 @@ import {
   TECH_INDICATOR_TIME_INTERVALS,
   TECHNICAL_INDICATORS,
   TECHNICAL_INDICATORS_ARR,
+  VOLUME_SPIKE_KEYS,
 } from '../constants/appConstants.js';
 
 import { calculateMFI, calculateRSI } from './talib.js';
@@ -113,6 +114,10 @@ const getBollingerBandStatusForAStock = (value) => {
   }
   return null;
 };
+
+const getVolumeSpikeStatusForTheStock = (volumeTrend) => {
+  return volumeTrend;
+};
 const getKeyStocksBaseObject = () => {
   const baseObject = {};
   TECHNICAL_INDICATORS_ARR.forEach((eachTI) => {
@@ -135,6 +140,12 @@ const getKeyStocksBaseObject = () => {
         case TECHNICAL_INDICATORS.bollingerbands: {
           Object.keys(BOLLINGERBANDS_KEYS).forEach((eachBBKey) => {
             baseObject[eachTI][eachInterval][eachBBKey] = [];
+          });
+          break;
+        }
+        case TECHNICAL_INDICATORS.volumeSpike: {
+          Object.keys(VOLUME_SPIKE_KEYS).forEach((eachVolumeSpikeKey) => {
+            baseObject[eachTI][eachInterval][eachVolumeSpikeKey] = [];
           });
           break;
         }
@@ -176,6 +187,16 @@ export const filterKeyStocksFromIndicators = (allStocks) => {
             const bollingerbandsKey = getBollingerBandStatusForAStock(intervalValue.pb);
             if (bollingerbandsKey) {
               keyStocks[tiName][intervalName][bollingerbandsKey].push({
+                stockExchangeCode,
+                value: intervalValue,
+              });
+            }
+            break;
+          }
+          case TECHNICAL_INDICATORS.volumeSpike: {
+            const volumeSpikeKey = getVolumeSpikeStatusForTheStock(intervalValue.volumeTrend);
+            if (volumeSpikeKey) {
+              keyStocks[tiName][intervalName][volumeSpikeKey].push({
                 stockExchangeCode,
                 value: intervalValue,
               });
@@ -237,4 +258,19 @@ export const sortBollingerBandsStocks = (bbObj) => {
     return acc;
   }, {});
   return sortedBB;
+};
+
+export const sortedVolumeSpikeStocks = (volumeSpikeObj) => {
+  const timeIntervals = Object.keys(volumeSpikeObj);
+  const sortedVolumeSpikes = timeIntervals.reduce((acc, eachTimeInterval) => {
+    const { upTrend, downTrend, neutral } = volumeSpikeObj[eachTimeInterval];
+    const sortedIntervalVolumeSpike = {
+      upTrend: [...upTrend.sort((a, b) => b.value.volumeChangedBy - a.value.volumeChangedBy)],
+      downTrend: [...downTrend.sort((a, b) => b.value.volumeChangedBy - a.value.volumeChangedBy)],
+      neutral: [...neutral.sort((a, b) => b.value.volumeChangedBy - a.value.volumeChangedBy)],
+    };
+    acc[eachTimeInterval] = sortedIntervalVolumeSpike;
+    return acc;
+  }, {});
+  return sortedVolumeSpikes;
 };
