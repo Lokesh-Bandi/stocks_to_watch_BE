@@ -1,6 +1,14 @@
 import { bearish, BollingerBands, bullish, MFI, OBV, RSI } from 'technicalindicators';
 
-import { DATA_ATTRIBUTES, MAX_DAYS_DATA, STOCK_MARKET_MOVEMENT, TECHNICAL_INDICATORS, TIME_INTERVAL } from '../constants/appConstants.js';
+import {
+  DATA_ATTRIBUTES,
+  MAX_DAYS_DATA,
+  PRICE_TREND,
+  STOCK_MARKET_MOVEMENT,
+  TECHNICAL_INDICATORS,
+  TIME_INTERVAL,
+  VOLUME_TREND,
+} from '../constants/appConstants.js';
 import { fetchCompleteStockDataDB, fetchCustomDataValuesDB } from '../database/utils/dbHelper.js';
 
 import {
@@ -12,6 +20,10 @@ import {
 } from './utilFuntions.js';
 
 const INVALID_VALUE = null;
+
+const reverseArray = (arr) => {
+  return arr.reverse();
+};
 
 export const calculateRSI = async (stockExchangeCode, instrumentalCode, interval = TIME_INTERVAL.One_Day, timePeriod = 14) => {
   try {
@@ -41,10 +53,10 @@ export const calculateMFI = async (stockExchangeCode, instrumentalCode, interval
 
     const msiInput = {
       period: timePeriod,
-      high: flattenStockData.high.reverse(),
-      low: flattenStockData.low.reverse(),
-      close: flattenStockData.close.reverse(),
-      volume: flattenStockData.volume.reverse(),
+      high: reverseArray(flattenStockData.high),
+      low: reverseArray(flattenStockData.low),
+      close: reverseArray(flattenStockData.close),
+      volume: reverseArray(flattenStockData.volume),
     };
     const msiValues = MFI.calculate(msiInput) ?? [];
 
@@ -64,8 +76,8 @@ export const calculateOBV = async (stockExchangeCode, instrumentalCode, interval
   const flattenStockData = getFlattenStockData(attributesIntervalData, attributesRequired);
 
   const obvInput = {
-    close: flattenStockData.close.reverse(),
-    volume: flattenStockData.volume.reverse(),
+    close: reverseArray(flattenStockData.close),
+    volume: reverseArray(flattenStockData.volume),
   };
   const obvValues = OBV.calculate(obvInput);
 
@@ -79,6 +91,8 @@ export const technicalIndicatorRequiredAttibutes = (ti) => {
       return [DATA_ATTRIBUTES.close];
     case TECHNICAL_INDICATORS.mfi:
       return [DATA_ATTRIBUTES.close, DATA_ATTRIBUTES.high, DATA_ATTRIBUTES.low, DATA_ATTRIBUTES.volume];
+    case TECHNICAL_INDICATORS.volumeSpike:
+      return [DATA_ATTRIBUTES.volume, DATA_ATTRIBUTES.close];
     default:
       return [DATA_ATTRIBUTES.open, DATA_ATTRIBUTES.close, DATA_ATTRIBUTES.high, DATA_ATTRIBUTES.low, DATA_ATTRIBUTES.volume];
   }
@@ -126,10 +140,38 @@ export const coreBollingerBandsCalc = (attributesObj) => {
   return finalBBValue;
 };
 
+export const coreVolumeSpike = (attributesObj) => {
+  const lastNCandlesVolume = 20;
+  const multiplies = 2;
+  const { close, volume } = attributesObj;
+  const volumeTradedToday = volume.at(-1) ? volume.at(-1) : 0;
+  const lastNCandlesVolumeArray = volume.slice(-lastNCandlesVolume + 1, -1) ?? [];
+  const totalVolume = lastNCandlesVolumeArray.reduce((acc, eachCandleVolume) => {
+    return acc + eachCandleVolume;
+  }, 0);
+  const avgVolume = totalVolume / lastNCandlesVolume;
+  const priceTrend = close.at(-2) > close.at(-1) ? PRICE_TREND.down : PRICE_TREND.up;
+  if (volumeTradedToday >= avgVolume * multiplies) {
+    return {
+      volume: volumeTradedToday,
+      volumeTrend: priceTrend === PRICE_TREND.down ? VOLUME_TREND.down : VOLUME_TREND.up,
+    };
+  }
+  return {
+    volume: volumeTradedToday,
+    volumeTrend: VOLUME_TREND.neutral,
+  };
+};
+
 export const calculateAllTisForTheStock = async (stockExchangeCode, instrumentalCode) => {
   try {
     const fetchedData = await fetchCompleteStockDataDB(instrumentalCode, MAX_DAYS_DATA);
-    const TechnicalIndicators = [TECHNICAL_INDICATORS.rsi, TECHNICAL_INDICATORS.mfi, TECHNICAL_INDICATORS.bollingerbands];
+    const TechnicalIndicators = [
+      TECHNICAL_INDICATORS.rsi,
+      TECHNICAL_INDICATORS.mfi,
+      TECHNICAL_INDICATORS.bollingerbands,
+      TECHNICAL_INDICATORS.volumeSpike,
+    ];
     const Intervals = [TIME_INTERVAL.Fifteen_Minute, TIME_INTERVAL.Four_Hour, TIME_INTERVAL.One_Day];
     let momentumStatus = STOCK_MARKET_MOVEMENT.neutral;
     const tiValues = TechnicalIndicators.reduce((acc, eachTI) => {
@@ -143,17 +185,17 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
       const flattenStockData = getFlattenStockData(attributesIntervalData, attributesRequired);
 
       const intervalStockData = {
-        open: flattenStockData.open.reverse(),
-        high: flattenStockData.high.reverse(),
-        low: flattenStockData.low.reverse(),
-        close: flattenStockData.close.reverse(),
-        volume: flattenStockData.volume.reverse(),
+        open: reverseArray(flattenStockData.open),
+        high: reverseArray(flattenStockData.high),
+        low: reverseArray(flattenStockData.low),
+        close: reverseArray(flattenStockData.close),
+        volume: reverseArray(flattenStockData.volume),
       };
 
       TechnicalIndicators.forEach((eachTI) => {
         const requiredAttributes = technicalIndicatorRequiredAttibutes(eachTI);
         const attributeValues = requiredAttributes.reduce((acc, reqAttr) => {
-          acc[reqAttr] = intervalStockData[reqAttr];
+          acc[reqAttr] = intervalStockData[reqAttr] ?? [];
           return acc;
         }, {});
         switch (eachTI) {
@@ -169,12 +211,17 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
             tiValues[eachTI][eachInterval] = coreBollingerBandsCalc(attributeValues);
             break;
           }
+          case TECHNICAL_INDICATORS.volumeSpike: {
+            tiValues[eachTI][eachInterval] = coreVolumeSpike(attributeValues);
+            break;
+          }
           default: {
             //
           }
         }
       });
 
+      // Bullish or Bearish for 1Day interval
       if (eachInterval === TIME_INTERVAL.One_Day) {
         const isBullish = bullish(intervalStockData);
         const isBearish = bearish(intervalStockData);

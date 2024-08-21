@@ -69,7 +69,19 @@ export const TECHNICAL_INDICATORS = {
   rsi: 'rsi',
   mfi: 'mfi',
   obv: 'obv',
+  volumeSpike: 'volumeSpike',
   bollingerbands: 'bollingerbands',
+};
+
+export const PRICE_TREND = {
+  up: 'up',
+  down: 'down',
+};
+
+export const VOLUME_TREND = {
+  up: 'up',
+  down: 'down',
+  neutral: 'neutral',
 };
 
 export const TECHNICAL_INDICATORS_ARR = Object.values(TECHNICAL_INDICATORS);

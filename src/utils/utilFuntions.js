@@ -21,7 +21,7 @@ import { NIFTY_500, STOCK_SYMBOLS } from '../constants/constants.js';
  * @property {number[]} [high] - High prices
  * @property {number[]} [low] - Low prices
  * @property {number[]} [close] - Close prices
- * @property {number[]} [vloume] - Volume
+ * @property {number[]} [volume] - Volume
  */
 
 /**

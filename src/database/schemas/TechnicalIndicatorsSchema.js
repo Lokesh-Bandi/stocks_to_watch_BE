@@ -33,6 +33,10 @@ const technicalIndicatorValues = new mongoose.Schema(
       type: timeIntervalObjectSchema,
       default: null,
     },
+    volumeSpike: {
+      type: timeIntervalObjectSchema,
+      default: null,
+    },
   },
   { _id: false }
 );
