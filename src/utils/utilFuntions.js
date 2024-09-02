@@ -183,6 +183,12 @@ export const getLastNDaysBackDate = (date, n = 0) => {
   return formatDate(dateNDaysAgo);
 };
 
+export const getLastSixMonthsDate = () => {
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 6);
+  return formatDate(startDate);
+};
+
 export const roundToDecimalPlaces = (num, decimalPlaces) => {
   const factor = 10 ** decimalPlaces;
   return Math.round(num * factor) / factor;

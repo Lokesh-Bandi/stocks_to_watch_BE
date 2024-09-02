@@ -9,6 +9,7 @@ const routes = {
   coreData: '/core-data',
   keyStocks: '/key-stocks',
   momentumStocks: '/momentum-stocks',
+  stockData: '/stock-data/:stockExchangeCode',
 };
 
 router.get('/', (req, res) => {
@@ -22,6 +23,9 @@ router.get(routes.ti_all, uiController.fetchConsolidatedTechnicalIdicatorValues)
 router.get(routes.keyStocks, uiController.fetchAllKeyStocks);
 // http://localhost:3000/ui/core-data
 router.get(routes.coreData, uiController.fetchCoreDataForAllStocks);
+// http://localhost:3000/ui/momentum-stocks
 router.get(routes.momentumStocks, uiController.fetchMomentumStocks);
+// http://localhost:3000/ui/stock-data/RVNL
+router.get(routes.stockData, uiController.fetchStockData);
 
 export default router;

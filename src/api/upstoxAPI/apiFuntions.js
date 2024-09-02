@@ -1,7 +1,14 @@
 import axios from 'axios';
+import UpstoxClient from 'upstox-js-sdk';
 
 import { ApiStatus } from '../../constants/appConstants.js';
-import { getCurrentDate, getFlattenDataToIntervalV2, getLastNDaysBackDate, getLastNTradingDatesHistoricalData } from '../../utils/utilFuntions.js';
+import {
+  getCurrentDate,
+  getFlattenDataToIntervalV2,
+  getLastNDaysBackDate,
+  getLastNTradingDatesHistoricalData,
+  getLastSixMonthsDate,
+} from '../../utils/utilFuntions.js';
 
 import { API_VERSION } from './keys.js';
 
@@ -149,6 +156,37 @@ export const getLastNDaysData = async (stockCode, apiInstance, interval, lastNDa
     return {
       status: ApiStatus.success,
       data: flattenDataToInterval,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      status: ApiStatus.error,
+      data: JSON.parse(e.response?.text ?? {}),
+    };
+  }
+};
+
+export const getUpstoxHistoricalData = async (stockCode, interval = 'day') => {
+  const toDate = getCurrentDate();
+  const fromDate = getLastSixMonthsDate();
+  const apiVersion = API_VERSION;
+  const apiInstance = await new UpstoxClient.HistoryApi();
+  try {
+    const historicalData = await new Promise((resolve, reject) => {
+      apiInstance.getHistoricalCandleData1(stockCode, interval, toDate, fromDate, apiVersion, (error, data) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          resolve(data.data.candles);
+        }
+      });
+    }).then((res) => {
+      return res;
+    });
+    return {
+      status: ApiStatus.success,
+      data: historicalData,
     };
   } catch (e) {
     console.log(e);

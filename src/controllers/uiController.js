@@ -1,6 +1,6 @@
 import { ERROR_MESSAGE, TECHNICAL_INDICATORS } from '../constants/appConstants.js';
-import { fetchMomentumStocks, fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
-import { constructUIResponseObjectForRSI, fetchAllKeyStocksFromDB, fetchCoreDataForAllDB } from '../models/uiModel.js';
+import { fetchInstrumentalCodeForSpecificStockDB, fetchMomentumStocks, fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
+import { constructUIResponseObjectForRSI, fetchAllKeyStocksFromDB, fetchCoreDataForAllDB, fetchStockData } from '../models/uiModel.js';
 import { sortBollingerBandsStocks, sortedVolumeSpikeStocks, sortMfiKeyStocks, sortRsiKeyStocks } from '../utils/talibUtils.js';
 
 const uiController = {
@@ -62,6 +62,21 @@ const uiController = {
       return acc;
     }, {});
     res.json(structuredResponseData);
+  },
+  fetchStockData: async (req, res) => {
+    const { stockExchangeCode } = req.params;
+    const stockCode = stockExchangeCode.toUpperCase();
+    try {
+      const instrumentalCode = await fetchInstrumentalCodeForSpecificStockDB(stockCode);
+      if (!instrumentalCode) {
+        res.send(ERROR_MESSAGE.unknownStockCode);
+      }
+      const stockData = await fetchStockData(instrumentalCode);
+      res.json(stockData);
+    } catch (e) {
+      console.log('Error while fetching stock data');
+      res.json(null);
+    }
   },
 };
 
