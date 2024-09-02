@@ -236,7 +236,13 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
 
       // Bullish or Bearish for 4Hr interval
       if (eachInterval === TIME_INTERVAL.Four_Hour) {
-        candlestickPattterns = candlestickPattternStatus(intervalStockData);
+        candlestickPattterns = candlestickPattternStatus({
+          open: flattenStockData.open,
+          high: flattenStockData.high,
+          low: flattenStockData.low,
+          close: flattenStockData.close,
+          volume: flattenStockData.volume,
+        });
       }
     });
 
