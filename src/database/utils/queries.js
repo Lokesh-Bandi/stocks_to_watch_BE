@@ -160,13 +160,13 @@ export const coreDataQuery = () => {
   return query;
 };
 
-export const momentumStocksQuery = () => {
+export const candlestickPattternsQuery = () => {
   const query = [
     {
       $project: {
         _id: 0,
         stockExchangeCode: 1,
-        momentum: 1,
+        candlestickPattterns: 1,
       },
     },
   ];

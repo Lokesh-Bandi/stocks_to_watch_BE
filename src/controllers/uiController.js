@@ -1,7 +1,8 @@
 import { ERROR_MESSAGE, TECHNICAL_INDICATORS } from '../constants/appConstants.js';
-import { fetchInstrumentalCodeForSpecificStockDB, fetchMomentumStocks, fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
+import { fetchCandlestickPatterns, fetchInstrumentalCodeForSpecificStockDB, fetchTIForAllStocksDB } from '../database/utils/dbHelper.js';
 import { constructUIResponseObjectForRSI, fetchAllKeyStocksFromDB, fetchCoreDataForAllDB, fetchStockData } from '../models/uiModel.js';
 import { sortBollingerBandsStocks, sortedVolumeSpikeStocks, sortMfiKeyStocks, sortRsiKeyStocks } from '../utils/talibUtils.js';
+import { getMomentumStaus, getPatternsFollowed } from '../utils/utilFuntions.js';
 
 const uiController = {
   fetchConsolidatedTechnicalIdicatorValues: async (req, res) => {
@@ -54,11 +55,14 @@ const uiController = {
     res.json(structuredResponseData);
   },
   fetchMomentumStocks: async (req, res) => {
-    const momentumStocks = await fetchMomentumStocks();
-    if (!momentumStocks) return res.json(null);
-    const structuredResponseData = momentumStocks.reduce((acc, eachStockData) => {
-      const { stockExchangeCode, momentum } = eachStockData;
-      acc[stockExchangeCode] = momentum;
+    const candlestickPattternsStocks = await fetchCandlestickPatterns();
+    if (!candlestickPattternsStocks) return res.json(null);
+    const structuredResponseData = candlestickPattternsStocks.reduce((acc, eachStockData) => {
+      const { stockExchangeCode, candlestickPattterns } = eachStockData;
+      acc[stockExchangeCode] = {
+        momentum: getMomentumStaus(candlestickPattterns),
+        patternsFollowed: getPatternsFollowed(candlestickPattterns),
+      };
       return acc;
     }, {});
     res.json(structuredResponseData);

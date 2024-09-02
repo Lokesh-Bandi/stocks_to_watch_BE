@@ -1,4 +1,4 @@
-import { bearish, BollingerBands, bullish, MFI, OBV, RSI } from 'technicalindicators';
+import { BollingerBands, MFI, OBV, RSI } from 'technicalindicators';
 
 import {
   DATA_ATTRIBUTES,
@@ -11,6 +11,7 @@ import {
 } from '../constants/appConstants.js';
 import { fetchCompleteStockDataDB, fetchCustomDataValuesDB } from '../database/utils/dbHelper.js';
 
+import { candlestickPattternStatus } from './patterns.js';
 import {
   constructIntervalDataFromArray,
   constructIntervalDataFromAttributeArray,
@@ -184,7 +185,8 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
       TECHNICAL_INDICATORS.volumeSpike,
     ];
     const Intervals = [TIME_INTERVAL.Fifteen_Minute, TIME_INTERVAL.Four_Hour, TIME_INTERVAL.One_Day];
-    let momentumStatus = STOCK_MARKET_MOVEMENT.neutral;
+    const momentumStatus = STOCK_MARKET_MOVEMENT.neutral;
+    let candlestickPattterns;
     const tiValues = TechnicalIndicators.reduce((acc, eachTI) => {
       acc[eachTI] = {};
       return acc;
@@ -232,19 +234,9 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
         }
       });
 
-      // Bullish or Bearish for 1Day interval
-      if (eachInterval === TIME_INTERVAL.One_Day) {
-        const isBullish = bullish(intervalStockData);
-        const isBearish = bearish(intervalStockData);
-        // eslint-disable-next-line no-nested-ternary
-        momentumStatus =
-          isBullish && isBearish
-            ? STOCK_MARKET_MOVEMENT.neutral
-            : isBullish
-              ? STOCK_MARKET_MOVEMENT.bullish
-              : isBearish
-                ? STOCK_MARKET_MOVEMENT.bearish
-                : STOCK_MARKET_MOVEMENT.neutral;
+      // Bullish or Bearish for 4Hr interval
+      if (eachInterval === TIME_INTERVAL.Four_Hour) {
+        candlestickPattterns = candlestickPattternStatus(intervalStockData);
       }
     });
 
@@ -252,6 +244,7 @@ export const calculateAllTisForTheStock = async (stockExchangeCode, instrumental
       stockExchangeCode,
       tiValues,
       momentumStatus,
+      candlestickPattterns,
     };
   } catch (e) {
     console.log(`Error while calculating MFI values ${stockExchangeCode}`, e);

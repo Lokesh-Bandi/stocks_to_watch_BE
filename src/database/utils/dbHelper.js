@@ -5,12 +5,12 @@ import { KeyStocksModel } from '../schemas/KeyStocksSchema.js';
 import { TechnicalIndicatorsModel } from '../schemas/TechnicalIndicatorsSchema.js';
 
 import {
+  candlestickPattternsQuery,
   completeStockDataQuery,
   coreDataQuery,
   instrumentalCodeForSpecificStockQuery,
   instrumentalCodesQuery,
   isDataAvailableForTheDateQuery,
-  momentumStocksQuery,
   rsiForAllQuery,
   stockAttributeFlattenQuery,
   stockAttributeQuery,
@@ -238,9 +238,9 @@ export const fetchCoreDataForAllStocksDB = async () => {
   }
 };
 
-export const fetchMomentumStocks = async () => {
+export const fetchCandlestickPatterns = async () => {
   try {
-    const responseData = await TechnicalIndicatorsModel.aggregate(momentumStocksQuery());
+    const responseData = await TechnicalIndicatorsModel.aggregate(candlestickPattternsQuery());
     return responseData ?? null;
   } catch (e) {
     console.log('Error while fetching momentum stocks', e);

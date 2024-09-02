@@ -1,5 +1,5 @@
 import { INSTRUMENT_KEYS } from '../api/upstoxAPI/constants.js';
-import { DATA_ATTRIBUTES, FLAT_GAP, INDEXES, OPERATOR_NAME, TIME_INTERVAL } from '../constants/appConstants.js';
+import { DATA_ATTRIBUTES, FLAT_GAP, INDEXES, OPERATOR_NAME, STOCK_MARKET_MOVEMENT, TIME_INTERVAL } from '../constants/appConstants.js';
 import { NIFTY_500, STOCK_SYMBOLS } from '../constants/constants.js';
 
 /**
@@ -568,4 +568,24 @@ export const getFlattenStockData = (dateWiseStockDataArray, attributesRequired) 
 
 export const isValidStockExchangeCode = (stockExchangeCode) => {
   return STOCK_SYMBOLS.includes(stockExchangeCode);
+};
+
+export const getMomentumStaus = ({ bullish, bearish }) => {
+  if (bullish.length > bearish.length) {
+    return STOCK_MARKET_MOVEMENT.bullish;
+  }
+  if (bearish.length > bullish.length) {
+    return STOCK_MARKET_MOVEMENT.bearish;
+  }
+  return STOCK_MARKET_MOVEMENT.neutral;
+};
+
+export const getPatternsFollowed = ({ bullish, bearish }) => {
+  if (bullish.length > bearish.length) {
+    return bullish;
+  }
+  if (bearish.length > bullish.length) {
+    return bearish;
+  }
+  return [];
 };

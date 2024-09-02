@@ -21,7 +21,7 @@ const updateMFIToDB = async (stockExchangeCode, mfiValues) => {
   return udpateStatus;
 };
 const updateALLTechnicalIndicatorsDB = async (arrOfStoringObjects) => {
-  const structuredUpdateOperationArray = arrOfStoringObjects.map(({ stockExchangeCode, tiValues, momentumStatus }) => {
+  const structuredUpdateOperationArray = arrOfStoringObjects.map(({ stockExchangeCode, tiValues, momentumStatus, candlestickPattterns }) => {
     return {
       updateOne: {
         filter: {
@@ -31,6 +31,7 @@ const updateALLTechnicalIndicatorsDB = async (arrOfStoringObjects) => {
           $set: {
             ta: tiValues,
             momentum: momentumStatus,
+            candlestickPattterns,
             lastUpdated: getCurrentDate(),
           },
         },

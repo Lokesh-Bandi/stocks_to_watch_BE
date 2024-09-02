@@ -41,6 +41,21 @@ const technicalIndicatorValues = new mongoose.Schema(
   { _id: false }
 );
 
+const CandlestickPattternsSchema = new mongoose.Schema(
+  {
+    bullish: {
+      type: [String],
+      default: null,
+    },
+    bearish: {
+      type: [String],
+      default: null,
+    },
+  },
+  {
+    _id: false,
+  }
+);
 const technicalIndicatorsSchema = new mongoose.Schema({
   stockExchangeCode: {
     type: String,
@@ -61,6 +76,11 @@ const technicalIndicatorsSchema = new mongoose.Schema({
   momentum: {
     type: String,
     default: STOCK_MARKET_MOVEMENT.neutral,
+  },
+  candlestickPattterns: {
+    type: CandlestickPattternsSchema,
+    required: true,
+    default: null,
   },
 });
 
